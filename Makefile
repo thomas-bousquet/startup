@@ -1,2 +1,2 @@
-infra:
+dev:
 	docker-compose up
