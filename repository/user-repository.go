@@ -3,11 +3,11 @@ package repository
 import "go.mongodb.org/mongo-driver/mongo"
 
 type UserRepository struct {
-	mongoClient *mongo.Client
+	collection *mongo.Collection
 }
 
-func NewUserRepository(mongoClient *mongo.Client) UserRepository {
+func NewUserRepository(userCollection *mongo.Collection) UserRepository {
 	return UserRepository{
-		mongoClient: mongoClient,
+		collection: userCollection,
 	}
 }

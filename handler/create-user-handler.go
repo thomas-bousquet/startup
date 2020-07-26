@@ -16,5 +16,4 @@ func NewCreateUserHandler(userRepository UserRepository) CreateUserHandler {
 }
 
 func (h CreateUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
-
 }

@@ -11,8 +11,8 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	mongoClient := client.NewMongoClient()
-	api.RegisterRoutes(router, mongoClient)
+	mongoDB := client.NewMongoDB()
+	api.RegisterRoutes(router, mongoDB)
 
 
 	fmt.Printf("Starting server at port 8080")
