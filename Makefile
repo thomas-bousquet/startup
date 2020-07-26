@@ -1,0 +1,2 @@
+infra:
+	docker-compose up
