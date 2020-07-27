@@ -9,11 +9,9 @@ import (
 )
 
 func RegisterRoutes(router *mux.Router, mongoDB *mongo.Database) {
-	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})
-
 	userRepository := NewUserRepository(mongoDB.Collection("users"))
 	createUserHandler := NewCreateUserHandler(userRepository)
 
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})
-	router.HandleFunc("/users", createUserHandler.Handle).Methods("GET")
+	router.HandleFunc("/users", createUserHandler.Handle).Methods("POST")
 }

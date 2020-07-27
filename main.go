@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/thomas-bousquet/startup/api"
@@ -11,9 +12,10 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	mongoDB := client.NewMongoDB()
-	api.RegisterRoutes(router, mongoDB)
+	mongoClient := client.NewMongoClient()
+	api.RegisterRoutes(router, mongoClient.Database("startup"))
 
+	defer mongoClient.Disconnect(context.Background())
 
 	fmt.Printf("Starting server at port 8080")
 	if err := http.ListenAndServe(":8080", router); err != nil {
