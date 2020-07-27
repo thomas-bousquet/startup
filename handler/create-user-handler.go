@@ -22,9 +22,9 @@ func (h CreateUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	println(vars)
 	user := model.User{
-		Firstname: "Thomas",
-		Lastname:  "Bousquet",
-		Email:     "thomas.bousquet@gmail.com",
+		Firstname: "John",
+		Lastname:  "Does",
+		Email:     "john.doe@gmail.com",
 		Password:  "12345",
 		CreatedAt: time.Now(),
 	}
