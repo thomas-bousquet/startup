@@ -1,11 +1,10 @@
 package handler
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/thomas-bousquet/startup/model"
+	"encoding/json"
+	. "github.com/thomas-bousquet/startup/model"
 	. "github.com/thomas-bousquet/startup/repository"
 	"net/http"
-	"time"
 )
 
 type CreateUserHandler struct {
@@ -19,14 +18,9 @@ func NewCreateUserHandler(userRepository UserRepository) CreateUserHandler {
 }
 
 func (h CreateUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	println(vars)
-	user := model.User{
-		Firstname: "John",
-		Lastname:  "Does",
-		Email:     "john.doe@gmail.com",
-		Password:  "12345",
-		CreatedAt: time.Now(),
-	}
+	var userPayload = User{}
+	json.NewDecoder(r.Body).Decode(&userPayload)
+
+	user := NewUser(userPayload.Firstname, userPayload.Lastname, userPayload.Email, userPayload.Password)
 	h.userRepository.CreateUser(user)
 }

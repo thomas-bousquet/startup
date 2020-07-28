@@ -37,3 +37,14 @@ func (repo UserRepository) FindUserByEmail(email string) User {
 
 	return user
 }
+
+func (repo UserRepository) FindUser(id string) User {
+	user := User{}
+	err := repo.collection.FindOne(context.Background(), bson.M{"id": id}).Decode(&user)
+
+	if err != nil {
+		log.Error(err)
+	}
+
+	return user
+}

@@ -11,23 +11,17 @@ type ReadUserHandler struct {
 	userRepository UserRepository
 }
 
-func NewReadUserHandler(userRepository UserRepository) CreateUserHandler {
-	return CreateUserHandler {
+func NewReadUserHandler(userRepository UserRepository) ReadUserHandler {
+	return ReadUserHandler {
 		userRepository,
 	}
 }
 
 func (h ReadUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	email := vars["email"]
+	id := vars["id"]
 
-	println(email)
-	println(email)
-	println(email)
-	println(email)
-	println(email)
-
-	user := h.userRepository.FindUserByEmail(email)
+	user := h.userRepository.FindUser(id)
 
 	json.NewEncoder(w).Encode(user)
 }

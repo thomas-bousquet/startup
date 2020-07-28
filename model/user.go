@@ -1,8 +1,12 @@
 package model
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type User struct {
+	Id string `json:"id" bson:"id"`
 	Firstname string `json:"firstname" bson:"firstname"`
 	Lastname string `json:"lastname" bson:"lastname"`
 	Email string `json:"email" bson:"email"`
@@ -12,11 +16,13 @@ type User struct {
 	DeletedAt time.Time `json:"-" bson:"deleted_at"`
 }
 
-func NewUser(firstname string, lastname string, email string) User {
+func NewUser(firstname string, lastname string, email string, password string) User {
 	return User{
+		Id: uuid.New().String(),
 		Firstname: firstname,
 		Lastname:  lastname,
 		Email:     email,
+		Password: password,
 		CreatedAt: time.Now(),
 	}
 }
