@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/thomas-bousquet/startup/api/adapter"
 	. "github.com/thomas-bousquet/startup/repository"
 	"net/http"
 )
@@ -12,7 +13,7 @@ type ReadUserHandler struct {
 }
 
 func NewReadUserHandler(userRepository UserRepository) ReadUserHandler {
-	return ReadUserHandler {
+	return ReadUserHandler{
 		userRepository,
 	}
 }
@@ -23,5 +24,6 @@ func (h ReadUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	user := h.userRepository.FindUser(id)
 
-	json.NewEncoder(w).Encode(user)
+	response, _ := json.Marshal(adapter.NewUserAdapter(user))
+	w.Write(response)
 }

@@ -1,24 +1,22 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type User struct {
-	Id string `json:"id" bson:"id"`
-	Firstname string `json:"firstname" bson:"firstname"`
-	Lastname string `json:"lastname" bson:"lastname"`
+	Id string `json:"id" bson:"_id"`
+	Firstname string `json:"first_name" bson:"first_name"`
+	Lastname string `json:"last_name" bson:"last_name"`
 	Email string `json:"email" bson:"email"`
-	Password string `json:"-" bson:"password"`
-	CreatedAt time.Time `json:"-" bson:"created_at"`
-	UpdatedAt time.Time `json:"-" bson:"updated_at"`
-	DeletedAt time.Time `json:"-" bson:"deleted_at"`
+	Password string `json:"password" bson:"password"`
+	CreatedAt time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at" bson:"deleted_at"`
 }
 
 func NewUser(firstname string, lastname string, email string, password string) User {
 	return User{
-		Id: uuid.New().String(),
 		Firstname: firstname,
 		Lastname:  lastname,
 		Email:     email,

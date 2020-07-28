@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/thomas-bousquet/startup/api/adapter"
 	. "github.com/thomas-bousquet/startup/repository"
 	"net/http"
 )
@@ -23,5 +24,6 @@ func (h ReadUserByEmailHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	user := h.userRepository.FindUserByEmail(email)
 
-	json.NewEncoder(w).Encode(user)
+	response, _ := json.Marshal(adapter.NewUserAdapter(user))
+	w.Write(response)
 }

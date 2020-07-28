@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	. "github.com/thomas-bousquet/startup/model"
 	. "github.com/thomas-bousquet/startup/repository"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -18,9 +19,11 @@ func NewCreateUserHandler(userRepository UserRepository) CreateUserHandler {
 }
 
 func (h CreateUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	var userPayload = User{}
-	json.NewDecoder(r.Body).Decode(&userPayload)
+	var user = User{}
+	json.NewDecoder(r.Body).Decode(&user)
+	userId := h.userRepository.CreateUser(user)
 
-	user := NewUser(userPayload.Firstname, userPayload.Lastname, userPayload.Email, userPayload.Password)
-	h.userRepository.CreateUser(user)
+	response, _ := json.Marshal(map[string]primitive.ObjectID{"id": userId})
+	w.WriteHeader(http.StatusCreated)
+	w.Write(response)
 }
