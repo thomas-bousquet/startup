@@ -18,7 +18,7 @@ func NewReadUserHandler(userRepository UserRepository) ReadUserHandler {
 	}
 }
 
-func (h ReadUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h ReadUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 

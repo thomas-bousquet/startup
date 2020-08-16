@@ -18,7 +18,7 @@ func NewReadUserByEmailHandler(userRepository UserRepository) ReadUserByEmailHan
 	}
 }
 
-func (h ReadUserByEmailHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h ReadUserByEmailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	email := vars["email"]
 

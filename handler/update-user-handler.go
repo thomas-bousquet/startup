@@ -22,7 +22,7 @@ func NewUpdateUserHandler(userRepository UserRepository, validator *validator.Va
 	}
 }
 
-func (h UpdateUserHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h UpdateUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
