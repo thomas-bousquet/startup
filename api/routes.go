@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gorilla/mux"
-	. "github.com/thomas-bousquet/startup/handler"
+	. "github.com/thomas-bousquet/startup/command"
 	. "github.com/thomas-bousquet/startup/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/go-playground/validator.v9"
@@ -12,10 +12,10 @@ import (
 func RegisterRoutes(router *mux.Router, mongoDB *mongo.Database) {
 	userRepository := NewUserRepository(mongoDB.Collection("users"))
 	validate := validator.New()
-	createUserHandler := NewCreateUserHandler(userRepository, validate)
-	updateUserHandler := NewUpdateUserHandler(userRepository, validate)
-	readUserHandler := NewReadUserHandler(userRepository)
-	readUserByEmailHandler := NewReadUserByEmailHandler(userRepository)
+	createUserHandler := NewHandler(NewCreateUserCommand(userRepository, validate))
+	updateUserHandler := NewHandler(NewUpdateUserCommand(userRepository, validate))
+	readUserHandler := NewHandler(NewReadUserCommand(userRepository))
+	readUserByEmailHandler := NewHandler(NewReadUserByEmailCommand(userRepository))
 
 
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})

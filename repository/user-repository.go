@@ -20,27 +20,34 @@ func NewUserRepository(userCollection *mongo.Collection) UserRepository {
 	}
 }
 
-func (repo UserRepository) CreateUser(user User) primitive.ObjectID {
+func (repo UserRepository) CreateUser(user User) (primitive.ObjectID, error) {
 	result, err := repo.collection.InsertOne(context.Background(),
 		bson.M{
 			"first_name": user.Firstname,
 			"last_name":  user.Lastname,
-			"password": user.Password,
+			"password":   user.Password,
 			"email":      user.Email,
 			"created_at": time.Now(),
 		})
 
 	if err != nil {
-		log.Error(err)
 		log.Errorf("Error when creating user with email '%s'", user.Email)
+		return primitive.ObjectID{}, err
 	}
 
-	return result.InsertedID.(primitive.ObjectID)
+	id := result.InsertedID.(primitive.ObjectID)
+
+	return id, nil
 }
 
-func (repo UserRepository) UpdateUser(id string, user User) {
-	objectId, _ := primitive.ObjectIDFromHex(id)
-	_, err := repo.collection.UpdateOne(context.Background(), bson.M{"_id": objectId}, bson.M{"$set":
+func (repo UserRepository) UpdateUser(id string, user User) error {
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = repo.collection.UpdateOne(context.Background(), bson.M{"_id": objectId}, bson.M{"$set":
 	bson.M{
 		"first_name": user.Firstname,
 		"last_name":  user.Lastname,
@@ -50,30 +57,32 @@ func (repo UserRepository) UpdateUser(id string, user User) {
 	})
 
 	if err != nil {
-		log.Error(err)
 		log.Errorf("Error when updating user with email '%s'", user.Email)
+		return err
 	}
+
+	return nil
 }
 
-func (repo UserRepository) FindUserByEmail(email string) User {
+func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
 	user := User{}
 	err := repo.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
 
 	if err != nil {
-		log.Error(err)
+		return nil, err
 	}
 
-	return user
+	return &user, nil
 }
 
-func (repo UserRepository) FindUser(id string) User {
+func (repo UserRepository) FindUser(id string) (*User, error) {
 	user := User{}
-	objectId, _ := primitive.ObjectIDFromHex(id)
-	err := repo.collection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&user)
+	objectId, err := primitive.ObjectIDFromHex(id)
+	err = repo.collection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&user)
 
 	if err != nil {
-		log.Error(err)
+		return nil, err
 	}
 
-	return user
+	return &user, nil
 }

@@ -11,7 +11,7 @@ type UserAdapter struct {
 	Email string `json:"email"`
 }
 
-func NewUserAdapter(user model.User) UserAdapter {
+func NewUserAdapter(user *model.User) UserAdapter {
 	return UserAdapter{
 		Id: user.Id,
 		Firstname: user.Firstname,
