@@ -2,20 +2,19 @@ package command
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	. "github.com/thomas-bousquet/startup/model"
 	. "github.com/thomas-bousquet/startup/repository"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/thomas-bousquet/startup/utils"
 	"net/http"
 )
 
 type UpdateUserCommand struct {
 	userRepository UserRepository
-	validator      *validator.Validate
+	validator      utils.Validator
 }
 
-func NewUpdateUserCommand(userRepository UserRepository, validator *validator.Validate) UpdateUserCommand {
+func NewUpdateUserCommand(userRepository UserRepository, validator utils.Validator) UpdateUserCommand {
 	return UpdateUserCommand{
 		userRepository,
 		validator,
@@ -35,10 +34,11 @@ func (h UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 
 	user.Id = id
 
-	err = h.validator.StructExcept(user, "password")
-	for _, e := range err.(validator.ValidationErrors) {
-		fmt.Println(e)
-	}
+	// TODO: Implement ValidateStructExcept in utils/Validator then use it right here
+	//err = h.validator.StructExcept(user, "password")
+	//for _, e := range err.(validator.ValidationErrors) {
+	//	fmt.Println(e)
+	//}
 
 	err = h.userRepository.UpdateUser(id, user)
 
