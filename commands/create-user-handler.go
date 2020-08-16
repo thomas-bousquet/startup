@@ -1,21 +1,21 @@
-package command
+package commands
 
 import (
 	"encoding/json"
-	. "github.com/thomas-bousquet/startup/custom-error"
-	. "github.com/thomas-bousquet/startup/model"
-	. "github.com/thomas-bousquet/startup/repository"
-	"github.com/thomas-bousquet/startup/utils"
+	. "github.com/thomas-bousquet/startup/errors"
+	. "github.com/thomas-bousquet/startup/models"
+	. "github.com/thomas-bousquet/startup/repositories"
+	"github.com/thomas-bousquet/startup/utils/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
 type CreateUserCommand struct {
 	userRepository UserRepository
-	validator      utils.Validator
+	validator      validator.Validator
 }
 
-func NewCreateUserCommand(userRepository UserRepository, validator utils.Validator) CreateUserCommand {
+func NewCreateUserCommand(userRepository UserRepository, validator validator.Validator) CreateUserCommand {
 	return CreateUserCommand{
 		userRepository: userRepository,
 		validator:      validator,

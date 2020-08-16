@@ -1,20 +1,21 @@
-package command
+package commands
 
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	. "github.com/thomas-bousquet/startup/model"
-	. "github.com/thomas-bousquet/startup/repository"
-	"github.com/thomas-bousquet/startup/utils"
+	. "github.com/thomas-bousquet/startup/models"
+	. "github.com/thomas-bousquet/startup/repositories"
+	"github.com/thomas-bousquet/startup/utils/validator"
+	. "github.com/thomas-bousquet/startup/errors"
 	"net/http"
 )
 
 type UpdateUserCommand struct {
 	userRepository UserRepository
-	validator      utils.Validator
+	validator      validator.Validator
 }
 
-func NewUpdateUserCommand(userRepository UserRepository, validator utils.Validator) UpdateUserCommand {
+func NewUpdateUserCommand(userRepository UserRepository, validator validator.Validator) UpdateUserCommand {
 	return UpdateUserCommand{
 		userRepository,
 		validator,
@@ -34,11 +35,11 @@ func (h UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 
 	user.Id = id
 
-	// TODO: Implement ValidateStructExcept in utils/Validator then use it right here
-	//err = h.validator.StructExcept(user, "password")
-	//for _, e := range err.(validator.ValidationErrors) {
-	//	fmt.Println(e)
-	//}
+	errors := h.validator.ValidateStructExcept(user, "Password")
+
+	if len(errors) > 0 {
+		return NewValidationError(errors)
+	}
 
 	err = h.userRepository.UpdateUser(id, user)
 

@@ -1,9 +1,9 @@
-package repository
+package repositories
 
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	. "github.com/thomas-bousquet/startup/model"
+	. "github.com/thomas-bousquet/startup/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,8 +23,8 @@ func NewUserRepository(userCollection *mongo.Collection) UserRepository {
 func (repo UserRepository) CreateUser(user User) (primitive.ObjectID, error) {
 	result, err := repo.collection.InsertOne(context.Background(),
 		bson.M{
-			"first_name": user.Firstname,
-			"last_name":  user.Lastname,
+			"first_name": user.FirstName,
+			"last_name":  user.LastName,
 			"password":   user.Password,
 			"email":      user.Email,
 			"created_at": time.Now(),
@@ -49,8 +49,8 @@ func (repo UserRepository) UpdateUser(id string, user User) error {
 
 	_, err = repo.collection.UpdateOne(context.Background(), bson.M{"_id": objectId}, bson.M{"$set":
 	bson.M{
-		"first_name": user.Firstname,
-		"last_name":  user.Lastname,
+		"first_name": user.FirstName,
+		"last_name":  user.LastName,
 		"email":      user.Email,
 		"updated_at": time.Now(),
 	},

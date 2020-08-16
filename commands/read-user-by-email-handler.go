@@ -1,10 +1,10 @@
-package command
+package commands
 
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/thomas-bousquet/startup/api/adapter"
-	. "github.com/thomas-bousquet/startup/repository"
+	"github.com/thomas-bousquet/startup/api/adapters"
+	. "github.com/thomas-bousquet/startup/repositories"
 	"net/http"
 )
 
@@ -28,7 +28,7 @@ func (h ReadUserByEmailCommand) Execute(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	response, err := json.Marshal(adapter.NewUserAdapter(user))
+	response, err := json.Marshal(adapters.NewUserAdapter(user))
 
 	if err != nil {
 		return err

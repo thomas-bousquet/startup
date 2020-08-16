@@ -1,4 +1,4 @@
-package utils
+package validator
 
 import (
 	"gopkg.in/go-playground/validator.v9"
@@ -11,6 +11,12 @@ type Validator struct {
 
 func (v Validator) ValidateStruct(data interface{}) []Error {
 	err := v.validator.Struct(data)
+	validationErrors := extractErrors(err)
+	return buildValidationErrors(validationErrors, nil)
+}
+
+func (v Validator) ValidateStructExcept(data interface{}, fields ...string) []Error {
+	err := v.validator.StructExcept(data, fields...)
 	validationErrors := extractErrors(err)
 	return buildValidationErrors(validationErrors, nil)
 }

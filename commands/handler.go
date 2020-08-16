@@ -1,8 +1,8 @@
-package command
+package commands
 
 import (
 	"encoding/json"
-	. "github.com/thomas-bousquet/startup/custom-error"
+	. "github.com/thomas-bousquet/startup/errors"
 	"net/http"
 )
 

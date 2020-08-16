@@ -1,4 +1,4 @@
-package client
+package clients
 
 import (
 	"context"
@@ -18,6 +18,5 @@ func NewMongoClient() *mongo.Client {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	//defer client.Disconnect(ctx)
 	return client
 }

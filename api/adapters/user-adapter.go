@@ -1,7 +1,7 @@
-package adapter
+package adapters
 
 import (
-	"github.com/thomas-bousquet/startup/model"
+	"github.com/thomas-bousquet/startup/models"
 )
 
 type UserAdapter struct {
@@ -11,11 +11,11 @@ type UserAdapter struct {
 	Email string `json:"email"`
 }
 
-func NewUserAdapter(user *model.User) UserAdapter {
+func NewUserAdapter(user *models.User) UserAdapter {
 	return UserAdapter{
 		Id: user.Id,
-		Firstname: user.Firstname,
-		Lastname:  user.Lastname,
+		Firstname: user.FirstName,
+		Lastname:  user.LastName,
 		Email:     user.Email,
 	}
 }
