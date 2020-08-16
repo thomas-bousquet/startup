@@ -24,6 +24,14 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			body, _ := json.Marshal(e)
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write(body)
+		case UnexpectedError:
+			body, _ := json.Marshal(e)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(body)
+		case AuthenticationError:
+			body, _ := json.Marshal(e)
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write(body)
 		default:
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}

@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	. "github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -66,7 +67,17 @@ func (repo UserRepository) UpdateUser(id string, user User) error {
 
 func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
 	user := User{}
-	err := repo.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
+	result := repo.collection.FindOne(context.Background(), bson.M{"email": email})
+
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return nil, nil
+		} else {
+			return nil, NewUnexpectedError()
+		}
+	}
+
+	err := result.Decode(&user)
 
 	if err != nil {
 		return nil, err
@@ -78,7 +89,38 @@ func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
 func (repo UserRepository) FindUser(id string) (*User, error) {
 	user := User{}
 	objectId, err := primitive.ObjectIDFromHex(id)
-	err = repo.collection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&user)
+	result := repo.collection.FindOne(context.Background(), bson.M{"_id": objectId})
+
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return nil, nil
+		} else {
+			return nil, NewUnexpectedError()
+		}
+	}
+
+	err = result.Decode(&user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (repo UserRepository) AuthenticateUser(email string, password string) (*User, error) {
+	user := User{}
+	result := repo.collection.FindOne(context.Background(), bson.M{"email": email, "password": password})
+
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return nil, nil
+		} else {
+			return nil, NewUnexpectedError()
+		}
+	}
+
+	err := result.Decode(&user)
 
 	if err != nil {
 		return nil, err

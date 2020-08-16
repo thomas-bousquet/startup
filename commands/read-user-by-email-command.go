@@ -18,11 +18,11 @@ func NewReadUserByEmailCommand(userRepository UserRepository) ReadUserByEmailCom
 	}
 }
 
-func (h ReadUserByEmailCommand) Execute(w http.ResponseWriter, r *http.Request) error {
+func (c ReadUserByEmailCommand) Execute(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	email := vars["email"]
 
-	user, err := h.userRepository.FindUserByEmail(email)
+	user, err := c.userRepository.FindUserByEmail(email)
 
 	if err != nil {
 		return err

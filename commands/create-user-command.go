@@ -22,7 +22,7 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (h CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
+func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
 	var user = User{}
 	err := json.NewDecoder(r.Body).Decode(&user)
 
@@ -30,13 +30,13 @@ func (h CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
-	errors := h.validator.ValidateStruct(user)
+	errors := c.validator.ValidateStruct(user)
 
 	if len(errors) > 0 {
 		return NewValidationError(errors)
 	}
 
-	userId, err := h.userRepository.CreateUser(user)
+	userId, err := c.userRepository.CreateUser(user)
 
 	if err != nil {
 		return err

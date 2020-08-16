@@ -18,11 +18,11 @@ func NewReadUserCommand(userRepository UserRepository) ReadUserCommand {
 	}
 }
 
-func (h ReadUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
+func (c ReadUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	user, err := h.userRepository.FindUser(id)
+	user, err := c.userRepository.FindUser(id)
 
 	if err != nil {
 		return err
