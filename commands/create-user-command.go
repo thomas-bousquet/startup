@@ -33,7 +33,7 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 	errors := c.validator.ValidateStruct(user)
 
 	if len(errors) > 0 {
-		return NewValidationError(errors)
+		return NewValidationError("An error occurred when validating user fields", errors)
 	}
 
 	userId, err := c.userRepository.CreateUser(user)

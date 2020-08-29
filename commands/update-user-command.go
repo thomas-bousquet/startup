@@ -38,7 +38,7 @@ func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 	errors := c.validator.ValidateStructExcept(user, "Password")
 
 	if len(errors) > 0 {
-		return NewValidationError(errors)
+		return NewValidationError("An error occurred when validating user fields", errors)
 	}
 
 	err = c.userRepository.UpdateUser(id, user)

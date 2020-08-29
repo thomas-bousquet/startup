@@ -27,16 +27,20 @@ func NewLoginCommand(userRepository UserRepository, validator Validator, jwt JWT
 
 func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request) error {
 	email, password, ok := r.BasicAuth()
+	defaultErrorMessage := "An error occurred when logging user in"
 
 	if !ok {
-		return NewAuthenticationError()
+		return NewAuthorizationError(defaultErrorMessage)
 	}
 
 	credentials := NewCredentials(email, password)
 	errors := c.validator.ValidateStruct(credentials)
 
 	if len(errors) > 0 {
-		return NewValidationError(errors)
+		return NewValidationError(
+			"An error occurred when validation credentials",
+			errors,
+		)
 	}
 
 	user, err := c.userRepository.AuthenticateUser(credentials.Email, credentials.Password)
@@ -46,7 +50,7 @@ func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	if user == nil {
-		return NewAuthenticationError()
+		return NewAuthorizationError(defaultErrorMessage)
 	}
 
 	token, err := c.jwt.CreateToken(*user)

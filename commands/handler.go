@@ -22,16 +22,16 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		switch e := err.(type) {
 		case ValidationError:
 			body, _ := json.Marshal(e)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write(body)
+			w.WriteHeader(e.HttpCode)
+			_, _ = w.Write(body)
 		case UnexpectedError:
 			body, _ := json.Marshal(e)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(body)
-		case AuthenticationError:
+			_, _ = w.Write(body)
+		case AuthorizationError:
 			body, _ := json.Marshal(e)
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write(body)
+			w.WriteHeader(e.HttpCode)
+			_, _ = w.Write(body)
 		default:
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
