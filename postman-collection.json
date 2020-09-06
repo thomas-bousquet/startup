@@ -175,6 +175,36 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "ReadUsers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTg3NDQ0OTIsImp0aSI6IjZlNzkxYmQwLTUxNDktNDVmNi05Mzg2LTU4ZTQ5NTIxNWUxOCIsImlhdCI6MTU5ODc0NDE5Miwic3ViIjoiNWY0YWU2NzQ2MDNmNmMyMzhhZDQ2MTE2In0.2X4Acch17s_oaeHrWxHbniPziwNx74o8CJj1GR8iPijK7j-vcrsLKXBfpH_fihyVZLK11XxPnxfelnthsDqvdw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/5f4ae674603f6c238ad46116",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"5f4ae674603f6c238ad46116"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}

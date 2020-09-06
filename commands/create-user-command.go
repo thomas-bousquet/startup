@@ -23,7 +23,7 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 }
 
 func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
-	var user = User{}
+	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {

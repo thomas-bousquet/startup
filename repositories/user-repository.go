@@ -29,6 +29,7 @@ func (repo UserRepository) CreateUser(user User) (primitive.ObjectID, error) {
 			"password":   user.Password,
 			"email":      user.Email,
 			"created_at": time.Now(),
+			"role": [1]string{"user"},
 		})
 
 	if err != nil {
@@ -66,7 +67,7 @@ func (repo UserRepository) UpdateUser(id string, user User) error {
 }
 
 func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
-	user := User{}
+	var user User
 	result := repo.collection.FindOne(context.Background(), bson.M{"email": email})
 
 	if result.Err() != nil {
@@ -86,10 +87,53 @@ func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-func (repo UserRepository) FindUser(id string) (*User, error) {
-	user := User{}
+func (repo UserRepository) FindUserWithRole(id string, role string) (*User, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
-	result := repo.collection.FindOne(context.Background(), bson.M{"_id": objectId})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return repo.doFindUser(bson.M{"_id": objectId, "role": role})
+}
+
+func (repo UserRepository) FindUser(id string) (*User, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return repo.doFindUser(bson.M{"_id": objectId})
+}
+
+func (repo UserRepository) FindUsers() ([]User, error) {
+
+	results, err := repo.collection.Find(context.Background(), bson.M{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var users []User
+	for results.Next(context.Background()) {
+		var user User
+		err := results.Decode(&user)
+
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
+func (repo UserRepository) doFindUser(query primitive.M) (*User, error) {
+	var user User
+
+	result := repo.collection.FindOne(context.Background(), query)
 
 	if result.Err() != nil {
 		if result.Err() == mongo.ErrNoDocuments {
@@ -99,7 +143,7 @@ func (repo UserRepository) FindUser(id string) (*User, error) {
 		}
 	}
 
-	err = result.Decode(&user)
+	err := result.Decode(&user)
 
 	if err != nil {
 		return nil, err
@@ -109,7 +153,7 @@ func (repo UserRepository) FindUser(id string) (*User, error) {
 }
 
 func (repo UserRepository) AuthenticateUser(email string, password string) (*User, error) {
-	user := User{}
+	var user User
 	result := repo.collection.FindOne(context.Background(), bson.M{"email": email, "password": password})
 
 	if result.Err() != nil {

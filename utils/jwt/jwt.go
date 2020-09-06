@@ -23,7 +23,7 @@ func New(secretKey []byte) JWT {
 
 func (jwt JWT) CreateToken(user User) (*string, error) {
 	now := time.Now()
-	expirationTime := now.Add(5 * time.Minute)
+	expirationTime := now.Add(1 * time.Hour)
 	claims := jwtGo.StandardClaims{
 		Id:        uuid.New().String(),
 		IssuedAt:  now.Unix(),

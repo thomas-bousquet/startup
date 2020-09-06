@@ -26,7 +26,7 @@ func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	user := User{}
+	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
