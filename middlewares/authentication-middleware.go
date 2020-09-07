@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"encoding/json"
 	jwtGo "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/context"
 	. "github.com/thomas-bousquet/startup/errors"
 	"github.com/thomas-bousquet/startup/repositories"
+	errorHandler "github.com/thomas-bousquet/startup/utils/error-handler"
 	"github.com/thomas-bousquet/startup/utils/jwt"
 	"net/http"
 	"strings"
@@ -33,22 +33,7 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 
 			if len(authorizationHeaderParts) < 2 || strings.ToLower(authorizationHeaderParts[0]) != "bearer" {
 				authorizationError := NewAuthorizationError("Authorization header is not valid")
-
-				body, marshalError := json.Marshal(authorizationError)
-
-				if marshalError != nil {
-					http.Error(w, "An unexpected error occurred", http.StatusInternalServerError)
-					return
-				}
-
-				w.WriteHeader(http.StatusUnauthorized)
-				_, writeError := w.Write(body)
-
-				if writeError != nil {
-					http.Error(w, writeError.Error(), http.StatusInternalServerError)
-					return
-				}
-
+				errorHandler.WriteJSONErrorResponse(w, authorizationError)
 				return
 			}
 
@@ -57,21 +42,7 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			token, err := m.jwt.ParseToken(authorizationToken)
 
 			if err != nil {
-				body, marshalError := json.Marshal(err)
-
-				if marshalError != nil {
-					http.Error(w, marshalError.Error(), http.StatusInternalServerError)
-					return
-				}
-
-				w.WriteHeader(http.StatusUnauthorized)
-				_, writeError := w.Write(body)
-
-				if writeError != nil {
-					http.Error(w, writeError.Error(), http.StatusInternalServerError)
-					return
-				}
-
+				errorHandler.WriteJSONErrorResponse(w, err)
 				return
 			}
 
@@ -81,45 +52,14 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			user, err := m.userRepository.FindUserWithRole(userId, role)
 
 			if err != nil {
-				// TODO: Log properly / find a good logger (ELK ?)
 				unexpectedError := NewUnexpectedError()
-
-				body, marshalError := json.Marshal(unexpectedError)
-
-				if marshalError != nil {
-					http.Error(w, unexpectedError.Message, http.StatusInternalServerError)
-					return
-				}
-
-				w.WriteHeader(http.StatusUnauthorized)
-				_, writeError := w.Write(body)
-
-				if writeError != nil {
-					http.Error(w, writeError.Error(), http.StatusInternalServerError)
-					return
-				}
-
+				errorHandler.WriteJSONErrorResponse(w, unexpectedError)
 				return
 			}
 
 			if user == nil {
 				authorizationError := NewAuthorizationError("Authorization header is not valid")
-
-				body, marshalError := json.Marshal(authorizationError)
-
-				if marshalError != nil {
-					http.Error(w, "An unexpected error occurred", http.StatusInternalServerError)
-					return
-				}
-
-				w.WriteHeader(http.StatusUnauthorized)
-				_, writeError := w.Write(body)
-
-				if writeError != nil {
-					http.Error(w, writeError.Error(), http.StatusInternalServerError)
-					return
-				}
-
+				errorHandler.WriteJSONErrorResponse(w, authorizationError)
 				return
 			}
 

@@ -1,8 +1,7 @@
 package commands
 
 import (
-	"encoding/json"
-	. "github.com/thomas-bousquet/startup/errors"
+	errorHandler "github.com/thomas-bousquet/startup/utils/error-handler"
 	"net/http"
 )
 
@@ -19,21 +18,6 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = h.Command.Execute(w, r)
 
 	if err != nil {
-		switch e := err.(type) {
-		case ValidationError:
-			body, _ := json.Marshal(e)
-			w.WriteHeader(e.HttpCode)
-			_, _ = w.Write(body)
-		case UnexpectedError:
-			body, _ := json.Marshal(e)
-			w.WriteHeader(http.StatusInternalServerError)
-			_, _ = w.Write(body)
-		case AuthorizationError:
-			body, _ := json.Marshal(e)
-			w.WriteHeader(e.HttpCode)
-			_, _ = w.Write(body)
-		default:
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
+		errorHandler.WriteJSONErrorResponse(w, err)
 	}
 }

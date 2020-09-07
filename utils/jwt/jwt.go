@@ -23,11 +23,10 @@ func New(secretKey []byte) JWT {
 
 func (jwt JWT) CreateToken(user User) (*string, error) {
 	now := time.Now()
-	expirationTime := now.Add(1 * time.Hour)
 	claims := jwtGo.StandardClaims{
 		Id:        uuid.New().String(),
 		IssuedAt:  now.Unix(),
-		ExpiresAt: expirationTime.Unix(),
+		ExpiresAt: 0,
 		Subject:   user.Id,
 	}
 
@@ -49,7 +48,7 @@ func (jwt JWT) ParseToken(token string) (*jwtGo.Token, error) {
 	})
 
 	if err != nil {
-		return nil, errors.NewAuthorizationError(err.Error())
+		return nil, errors.NewAuthorizationError("Authorization header is not valid")
 	}
 
 	return t, nil
