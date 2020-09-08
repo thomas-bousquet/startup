@@ -2,6 +2,7 @@ package error_handler
 
 import (
 	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	. "github.com/thomas-bousquet/startup/errors"
 )
@@ -9,16 +10,21 @@ import (
 func WriteJSONErrorResponse(w http.ResponseWriter, err error) {
 	switch e := err.(type) {
 	case ValidationError:
+		log.Error(e)
 		w.WriteHeader(e.HttpCode)
 		doWriteError(w, err)
 	case UnexpectedError:
+		log.Error(e)
 		w.WriteHeader(e.HttpCode)
 		doWriteError(w, err)
 	case AuthorizationError:
+		log.Error(e)
 		w.WriteHeader(e.HttpCode)
 		doWriteError(w, err)
 	default:
-		doWriteError(w, NewUnexpectedError())
+		unexpectedError :=  NewUnexpectedError()
+		log.Error(unexpectedError)
+		doWriteError(w, unexpectedError)
 	}
 }
 

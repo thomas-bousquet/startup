@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/models"
 	. "github.com/thomas-bousquet/startup/repositories"
@@ -23,6 +24,7 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 }
 
 func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
+	log.Info("Create user")
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 

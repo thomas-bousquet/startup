@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/thomas-bousquet/startup/api"
 	"github.com/thomas-bousquet/startup/clients"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -17,7 +16,7 @@ func main() {
 
 	defer mongoClient.Disconnect(context.Background())
 
-	fmt.Printf("Starting server on port 8080")
+	log.Info("Starting server on port 8080")
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal(err)
 	}

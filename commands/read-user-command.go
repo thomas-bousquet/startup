@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"github.com/thomas-bousquet/startup/api/adapters"
 	. "github.com/thomas-bousquet/startup/repositories"
 	"net/http"
@@ -19,6 +20,7 @@ func NewReadUserCommand(userRepository UserRepository) ReadUserCommand {
 }
 
 func (c ReadUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
+	log.Info("Read user")
 	vars := mux.Vars(r)
 	id := vars["id"]
 
