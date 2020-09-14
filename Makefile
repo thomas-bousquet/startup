@@ -1,14 +1,17 @@
-.PHONY: docker-up docker-down integration-test
+.PHONY: docker-up docker-down build integration-test
 
 docker-up:
-	docker-compose up -d
+	@go mod vendor
+	@docker-compose up
 
 docker-down:
-	docker-compose down
+	@docker-compose down
 
 build:
-	go build
+	@go build
 
-integration-test: #docker-up
-	go test -v ./it-test
-	#make docker-down
+integration-test:
+	@go test -v ./it-test -count=1
+
+docker-logs:
+	docker-compose logs
