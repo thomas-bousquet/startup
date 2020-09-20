@@ -1,0 +1,19 @@
+# This is a basic workflow to help you get started with Actions
+
+name: ProjectPipeline
+
+on:
+  push:
+    branches: '*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    container:
+      image: golang:1.15-alpine
+    steps:
+      - name: IT Tests
+        run: make integration-test
+

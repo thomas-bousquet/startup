@@ -11,11 +11,11 @@ services:
     working_dir: /go/src/github.com/thomas-bousquet/startup
     ports:
     - 8080:8080
-    image: golang:1.15-alpine
+    build:
+      context: .
     volumes:
     - .:/go/src/github.com/thomas-bousquet/startup
     container_name: startup-app
     restart: always
     depends_on:
       - mongo
-    entrypoint: go run main.go

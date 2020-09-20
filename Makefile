@@ -8,7 +8,7 @@ docker-down:
 	@docker-compose down
 
 build:
-	@go build
+	docker build -t startup .
 
 integration-test:
 	@go test -v ./it-test -count=1
