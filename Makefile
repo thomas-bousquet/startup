@@ -1,7 +1,6 @@
 .PHONY: docker-up docker-down build integration-test
 
 docker-up:
-	@go mod vendor
 	@docker-compose up
 
 docker-down:

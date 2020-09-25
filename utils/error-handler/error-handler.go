@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	. "github.com/thomas-bousquet/startup/errors"
+	. "startup/errors"
 )
 
 func WriteJSONErrorResponse(w http.ResponseWriter, err error) {

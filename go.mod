@@ -1,4 +1,4 @@
-module github.com/thomas-bousquet/startup
+module startup
 
 go 1.14
 
