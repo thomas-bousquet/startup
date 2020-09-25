@@ -1,4 +1,4 @@
-.PHONY: docker-up docker-down build integration-test
+.PHONY: docker-up docker-down build integration-test docker-logs
 
 docker-up:
 	@go mod vendor
