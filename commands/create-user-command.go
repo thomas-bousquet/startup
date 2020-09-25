@@ -3,10 +3,10 @@ package commands
 import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	. "github.com/thomas-bousquet/startup/errors"
-	. "github.com/thomas-bousquet/startup/models"
-	. "github.com/thomas-bousquet/startup/repositories"
-	"github.com/thomas-bousquet/startup/utils/validator"
+	. "startup/errors"
+	. "startup/models"
+	. "startup/repositories"
+	"startup/utils/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )

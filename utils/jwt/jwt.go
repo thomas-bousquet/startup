@@ -2,10 +2,10 @@ package jwt
 
 import (
 	jwtGo "github.com/dgrijalva/jwt-go"
-	"github.com/thomas-bousquet/startup/errors"
-	. "github.com/thomas-bousquet/startup/errors"
-	. "github.com/thomas-bousquet/startup/models"
-	uuid "github.com/thomas-bousquet/startup/utils/id-generator"
+	"startup/errors"
+	. "startup/errors"
+	. "startup/models"
+	uuid "startup/utils/id-generator"
 	"time"
 )
 
