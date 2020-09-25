@@ -6,15 +6,12 @@ services:
     container_name: startup-db
     restart: always
     ports:
-    - 27017:27017
+      - 27017:27017
   app:
-    working_dir: /go/src/github.com/thomas-bousquet/startup
     ports:
-    - 8080:8080
+      - 8080:8080
     build:
       context: .
-    volumes:
-    - .:/go/src/github.com/thomas-bousquet/startup
     container_name: startup-app
     restart: always
     depends_on:

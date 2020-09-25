@@ -1,16 +1,19 @@
-.PHONY: docker-up docker-down build integration-test
+.PHONY: start-dev stop-dev build-docker start stop-prod test build-test-app
 
-docker-up:
-	@docker-compose up
+start-dev:
+	@docker-compose -f docker-compose.dev.yml up
 
-docker-down:
-	@docker-compose down
+stop-dev:
+	@docker-compose -f docker-compose.dev.yml down
 
-build:
-	docker build -t startup .
+build-docker:
+	@docker build -t startup .
 
-integration-test:
-	@go test -v ./it-test -count=1
+start:
+	@docker-compose -f docker-compose.test.yml up --remove-orphans --force-recreate --build
 
-docker-logs:
-	docker-compose logs
+stop:
+	@docker-compose -f docker-compose.test.yml down
+
+test:
+	@go test ./... -count=1

@@ -1,9 +1,9 @@
-FROM golang:1.15-alpine AS build
-WORKDIR /builder
+FROM golang:1.15-alpine AS builder
+WORKDIR /build
 COPY . .
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o app
+RUN GOOS=linux GOARCH=amd64 go build -o app
 
-FROM golang:1.15-alpine
-COPY --from=build /builder /go/bin/builder
+FROM alpine:latest
+COPY --from=builder /build/app /go/bin/app
 EXPOSE 8080
-CMD ["/go/bin/builder/app"]
+CMD ["/go/bin/app"]

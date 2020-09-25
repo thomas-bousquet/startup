@@ -5,15 +5,15 @@ name: ProjectPipeline
 on:
   push:
     branches: '*'
-  pull_request:
-    branches: [ master ]
-
 jobs:
-  test:
+  IntegrationTests:
     runs-on: ubuntu-20.04
-    container:
-      image: golang:1.15-alpine
     steps:
-      - name: IT Tests
-        run: make integration-test
-
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+      - name: Start DockerCompose
+        run: docker-compose -f docker-compose.test.yml up -d --remove-orphans --force-recreate --build
+      - name: Run integration tests
+        run: go test ./... -count=1
+      - name: Print suite logs
+        run: docker-compose -f docker-compose.test.yml logs

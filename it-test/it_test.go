@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os/exec"
 	"testing"
+	faker "github.com/bxcodec/faker/v3"
 )
 
 type ItTestSuite struct {
@@ -17,8 +18,6 @@ type ItTestSuite struct {
 
 func (s *ItTestSuite) SetupTest() {
 	s.baseUrl = "http://localhost:8080"
-
-	exec.Command("bash", "-c", "cd .. && make docker-up").Start()
 
 	for {
 		resp, err := http.Get(s.baseUrl +"/health")
@@ -33,16 +32,17 @@ func (s *ItTestSuite) SetupTest() {
 	}
 }
 
-func (s *ItTestSuite) TearDownTest() {
-	exec.Command("bash", "-c", "cd .. && make docker-down").Run()
-}
-
 func (s *ItTestSuite) TestUserFlow() {
+	userFirstName := faker.FirstName()
+	userLastName := faker.LastName()
+	userEmail := faker.Email()
+	userPassword := faker.Password()
+
 	payload, err := json.Marshal(map[string]string{
-		"first_name": "John",
-		"last_name": "Doe",
-		"email": "john.doe@test.com",
-		"password": "12345678",
+		"first_name": userFirstName,
+		"last_name": userLastName,
+		"email": userEmail,
+		"password": userPassword,
 	})
 
 	if err != nil {
@@ -52,7 +52,12 @@ func (s *ItTestSuite) TestUserFlow() {
 	createUserResponse, err := http.Post(s.baseUrl +"/users", "application/json", bytes.NewBuffer(payload))
 
 	assert.Equal(s.T(), nil, err)
-	assert.Equal(s.T(), 200, createUserResponse.StatusCode)
+	assert.Equal(s.T(), http.StatusCreated, createUserResponse.StatusCode)
+
+	//resp := map[string]string{}
+	//userId := createUserResponse.Body.Read(&resp)
+	//
+	//readUser, err := http.Post(s.baseUrl +"/users" + , "application/json", bytes.NewBuffer(payload))
 }
 
 func (s *ItTestSuite) AfterTest(_, _ string) {

@@ -3,8 +3,8 @@ package commands
 import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	"startup/api/adapters"
-	. "startup/repositories"
+	"github.com/thomas-bousquet/startup/api/adapters"
+	. "github.com/thomas-bousquet/startup/repositories"
 	"net/http"
 )
 
