@@ -1,6 +1,6 @@
 # startup
 
-In order to run the application on your local machine, mongoDB needs to be running first with: `make dev`
+In order to run the application on your local machine, mongoDB needs to be running first with: `make docker-up`
 
 TODO:
 - [start]: Create account / tenant concept
