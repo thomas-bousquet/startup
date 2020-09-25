@@ -1,7 +1,7 @@
 package commands
 
 import (
-	errorHandler "github.com/thomas-bousquet/startup/utils/error-handler"
+	errorHandler "startup/utils/error-handler"
 	"net/http"
 )
 

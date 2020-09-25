@@ -2,12 +2,12 @@ package commands
 
 import (
 	"encoding/json"
-	. "github.com/thomas-bousquet/startup/api/adapters"
-	. "github.com/thomas-bousquet/startup/errors"
-	. "github.com/thomas-bousquet/startup/models"
-	. "github.com/thomas-bousquet/startup/repositories"
-	. "github.com/thomas-bousquet/startup/utils/jwt"
-	. "github.com/thomas-bousquet/startup/utils/validator"
+	. "startup/api/adapters"
+	. "startup/errors"
+	. "startup/models"
+	. "startup/repositories"
+	. "startup/utils/jwt"
+	. "startup/utils/validator"
 	"net/http"
 )
 

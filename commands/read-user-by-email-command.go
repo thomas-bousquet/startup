@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/startup/api/adapters"
-	. "github.com/thomas-bousquet/startup/repositories"
+	"startup/api/adapters"
+	. "startup/repositories"
 	"net/http"
 )
 

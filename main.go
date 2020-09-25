@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/thomas-bousquet/startup/api"
-	"github.com/thomas-bousquet/startup/clients"
+	"startup/api"
+	"startup/clients"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
