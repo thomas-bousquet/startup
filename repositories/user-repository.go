@@ -3,8 +3,8 @@ package repositories
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	. "startup/errors"
-	. "startup/models"
+	. "github.com/thomas-bousquet/startup/errors"
+	. "github.com/thomas-bousquet/startup/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

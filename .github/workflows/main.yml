@@ -1,0 +1,19 @@
+# This is a basic workflow to help you get started with Actions
+
+name: ProjectPipeline
+
+on:
+  push:
+    branches: '*'
+jobs:
+  IntegrationTests:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+      - name: Start DockerCompose
+        run: docker-compose -f docker-compose.test.yml up -d --remove-orphans --force-recreate --build
+      - name: Run integration tests
+        run: go test ./... -count=1
+      - name: Print suite logs
+        run: docker-compose -f docker-compose.test.yml logs

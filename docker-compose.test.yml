@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo
+    container_name: startup-db
+    restart: always
+    ports:
+      - 27017:27017
+  app:
+    ports:
+      - 8080:8080
+    build:
+      context: .
+    container_name: startup-app
+    restart: always
+    depends_on:
+      - mongo

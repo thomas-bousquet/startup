@@ -3,10 +3,10 @@ package commands
 import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	. "startup/errors"
-	. "startup/models"
-	. "startup/repositories"
-	"startup/utils/validator"
+	. "github.com/thomas-bousquet/startup/errors"
+	. "github.com/thomas-bousquet/startup/models"
+	. "github.com/thomas-bousquet/startup/repositories"
+	"github.com/thomas-bousquet/startup/utils/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
@@ -24,7 +24,7 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 }
 
 func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
-	log.Info("Create user")
+	log.Info("Creating user")
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 

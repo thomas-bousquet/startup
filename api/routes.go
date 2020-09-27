@@ -2,14 +2,14 @@ package api
 
 import (
 	"github.com/gorilla/mux"
+	. "github.com/thomas-bousquet/startup/commands"
+	"github.com/thomas-bousquet/startup/middlewares"
+	. "github.com/thomas-bousquet/startup/repositories"
+	JWT "github.com/thomas-bousquet/startup/utils/jwt"
+	. "github.com/thomas-bousquet/startup/utils/validator"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/go-playground/validator.v9"
 	"net/http"
-	. "startup/commands"
-	"startup/middlewares"
-	. "startup/repositories"
-	JWT "startup/utils/jwt"
-	. "startup/utils/validator"
 )
 
 func RegisterRoutes(router *mux.Router, mongoDB *mongo.Database) {

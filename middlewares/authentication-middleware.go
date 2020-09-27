@@ -3,10 +3,10 @@ package middlewares
 import (
 	jwtGo "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/context"
-	. "startup/errors"
-	"startup/repositories"
-	errorHandler "startup/utils/error-handler"
-	"startup/utils/jwt"
+	. "github.com/thomas-bousquet/startup/errors"
+	"github.com/thomas-bousquet/startup/repositories"
+	errorHandler "github.com/thomas-bousquet/startup/utils/error-handler"
+	"github.com/thomas-bousquet/startup/utils/jwt"
 	"net/http"
 	"strings"
 )

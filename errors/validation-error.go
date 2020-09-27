@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"startup/utils/validator"
+	"github.com/thomas-bousquet/startup/utils/validator"
 	"net/http"
 )
 
