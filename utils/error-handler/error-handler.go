@@ -22,8 +22,9 @@ func WriteJSONErrorResponse(w http.ResponseWriter, err error) {
 		w.WriteHeader(e.HttpCode)
 		doWriteError(w, err)
 	default:
+		log.Error(e)
 		unexpectedError :=  NewUnexpectedError()
-		log.Error(unexpectedError)
+		w.WriteHeader(unexpectedError.HttpCode)
 		doWriteError(w, unexpectedError)
 	}
 }

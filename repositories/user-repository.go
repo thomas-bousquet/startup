@@ -35,7 +35,6 @@ func (repo UserRepository) CreateUser(user User) (primitive.ObjectID, error) {
 	if err != nil {
 		// @TODO: Wrap error so we keep the root cause
 		log.Errorf("Error when creating user with email '%s'", user.Email)
-		log.Error(err)
 		return primitive.ObjectID{}, err
 	}
 
