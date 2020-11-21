@@ -4,9 +4,9 @@ name: ProjectPipeline
 
 on:
   push:
-    branches: '*'
+    branches: 'master'
 jobs:
-  IntegrationTests:
+  integration-tests:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout current branch
@@ -17,3 +17,17 @@ jobs:
         run: go test ./... -count=1
       - name: Print suite logs
         run: docker-compose -f docker-compose.test.yml logs
+  publish:
+    needs: integration-tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+      - name: Docker login
+        run: make docker-login DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_ACCESS_TOKEN=${{secrets.DOCKER_ACCESS_TOKEN}}
+      - name: Build image
+        run: make docker-build IMAGE_NAME=${{ github.event.repository.name }}
+      - name: Tag image
+        run: make docker-tag IMAGE_NAME=${{ github.event.repository.name }} DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_REPOSITORY=${{ github.event.repository.name }}
+      - name: Push image
+        run: make docker-push DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_REPOSITORY=${{ github.event.repository.name }}
