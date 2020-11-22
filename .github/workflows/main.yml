@@ -23,11 +23,25 @@ jobs:
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
+      - name: Bump version and push tag
+        id: tag_version
+        default_bump: minor
+        uses: mathieudutour/github-tag-action@v5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
       - name: Docker login
         run: make docker-login DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_ACCESS_TOKEN=${{secrets.DOCKER_ACCESS_TOKEN}}
       - name: Build image
         run: make docker-build IMAGE_NAME=${{ github.event.repository.name }}
       - name: Tag image
-        run: make docker-tag IMAGE_NAME=${{ github.event.repository.name }} DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_REPOSITORY=${{ github.event.repository.name }}
+        run: make docker-tag IMAGE_NAME=${{ github.event.repository.name }} DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_REPOSITORY=${{ github.event.repository.name }} TAG=${{ steps.tag_version.outputs.new_version }}
       - name: Push image
-        run: make docker-push DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_REPOSITORY=${{ github.event.repository.name }}
+        run: make docker-push DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}} DOCKER_REPOSITORY=${{ github.event.repository.name }} TAG=${{ steps.tag_version.outputs.new_version }}
