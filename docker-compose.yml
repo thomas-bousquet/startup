@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   mongo:
     image: mongo
@@ -12,6 +11,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=root
   app:
     environment:
+      - MONGODB_URL=mongodb://mongo
+      - MONGODB_PORT=27017
       - MONGODB_USERNAME=root
       - MONGODB_PASSWORD=root
     ports:

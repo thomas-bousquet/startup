@@ -3,12 +3,11 @@ package it_test
 import (
 	"bytes"
 	"encoding/json"
+	faker "github.com/bxcodec/faker/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
-	"os/exec"
 	"testing"
-	faker "github.com/bxcodec/faker/v3"
 )
 
 type ItTestSuite struct {
@@ -58,13 +57,6 @@ func (s *ItTestSuite) TestUserFlow() {
 	//userId := createUserResponse.Body.Read(&resp)
 	//
 	//readUser, err := http.Post(s.baseUrl +"/users" + , "application/json", bytes.NewBuffer(payload))
-}
-
-func (s *ItTestSuite) AfterTest(_, _ string) {
-	if s.Suite.T().Failed() {
-		logs, _ := exec.Command("bash", "-c", "cd .. && make docker-logs").Output()
-		s.Suite.T().Log(string(logs))
-	}
 }
 
 func TestItTestSuite(t *testing.T) {

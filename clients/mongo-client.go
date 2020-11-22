@@ -12,7 +12,8 @@ import (
 )
 
 func NewMongoClient() *mongo.Client {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017").SetAuth(options.Credential{
+	mongoUrl := os.Getenv("MONGODB_URL") + ":" + os.Getenv("MONGODB_PORT")
+	client, err := mongo.NewClient(options.Client().ApplyURI(mongoUrl).SetAuth(options.Credential{
 		Username:                os.Getenv("MONGODB_USERNAME"),
 		Password:                os.Getenv("MONGODB_PASSWORD"),
 	}))

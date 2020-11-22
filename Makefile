@@ -1,28 +1,43 @@
-.PHONY: start-dev stop-dev build-docker start stop-prod test build-test-app
+.PHONY: start-local
+start-local:
+	@docker-compose -f docker-compose.local.yml up --remove-orphans --force-recreate --build
 
-start-dev:
-	@docker-compose -f docker-compose.dev.yml up
+.PHONY: stop-local
+stop-local:
+	@docker-compose -f docker-compose.local.yml down
 
-stop-dev:
-	@docker-compose -f docker-compose.dev.yml down
-
+.PHONY: docker-login
 docker-login:
 	@docker login --username=$(DOCKER_USERNAME) --password=$(DOCKER_ACCESS_TOKEN)
 
+.PHONY: docker-build
 docker-build:
 	@docker build -t $(IMAGE_NAME) .
 
+.PHONY: docker-tag
 docker-tag:
 	@docker tag $(IMAGE_NAME) $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):latest
 
+.PHONY: docker-push
 docker-push:
 	@docker push $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):latest
 
+.PHONY: start
 start:
-	@docker-compose -f docker-compose.test.yml up --remove-orphans --force-recreate --build
+ifeq ($(DETACH),true)
+	@docker-compose up --remove-orphans --force-recreate --build --detach
+else
+	@docker-compose up --remove-orphans --force-recreate --build
+endif
 
+.PHONY: stop
 stop:
-	@docker-compose -f docker-compose.test.yml down
+	@docker-compose down
 
+.PHONY: logs
+make logs:
+	@docker-compose logs
+
+.PHONY: test
 test:
 	@go test ./... -count=1

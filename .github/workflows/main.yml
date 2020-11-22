@@ -12,11 +12,11 @@ jobs:
       - name: Checkout current branch
         uses: actions/checkout@v2
       - name: Start DockerCompose
-        run: docker-compose -f docker-compose.test.yml up -d --remove-orphans --force-recreate --build
+        run: make start DETACH=true
       - name: Run integration tests
-        run: go test ./... -count=1
+        run: make test
       - name: Print suite logs
-        run: docker-compose -f docker-compose.test.yml logs
+        run: make logs
   publish:
     needs: integration-tests
     runs-on: ubuntu-20.04
