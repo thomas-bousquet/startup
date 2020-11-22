@@ -25,7 +25,7 @@ docker-push:
 .PHONY: start
 start:
 ifeq ($(DETACH),true)
-	@docker-compose up --remove-orphans --force-recreate --build --detach
+	@docker-compose up --remove-orphans --force-recreate --build -d
 else
 	@docker-compose up --remove-orphans --force-recreate --build
 endif
