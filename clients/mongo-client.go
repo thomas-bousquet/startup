@@ -7,11 +7,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"log"
+	"os"
 	"time"
 )
 
 func NewMongoClient() *mongo.Client {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017"))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017").SetAuth(options.Credential{
+		Username:                os.Getenv("MONGODB_USERNAME"),
+		Password:                os.Getenv("MONGODB_PASSWORD"),
+	}))
 
 	if err != nil {
 		logrus.Panic(err)

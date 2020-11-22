@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: startup
+spec:
+  selector:
+    matchLabels:
+      app: startup
+  template:
+    metadata:
+      labels:
+        app: startup
+    spec:
+      containers:
+        - name: startup
+          image: thomasbousquet/startup:latest
+          env:
+            - name: MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: username
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: password
+          ports:
+            - containerPort: 8080
