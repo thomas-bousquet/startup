@@ -16,16 +16,18 @@ docker-build:
 
 .PHONY: docker-tag
 docker-tag:
+	@docker tag $(IMAGE_NAME) $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):$(TAG)
 	@docker tag $(IMAGE_NAME) $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):latest
 
 .PHONY: docker-push
 docker-push:
+	@docker push $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):$(TAG)
 	@docker push $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):latest
 
 .PHONY: start
 start:
 ifeq ($(DETACH),true)
-	@docker-compose up --remove-orphans --force-recreate --build --detach
+	@docker-compose up --remove-orphans --force-recreate --build -d
 else
 	@docker-compose up --remove-orphans --force-recreate --build
 endif
