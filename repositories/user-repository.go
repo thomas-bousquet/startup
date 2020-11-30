@@ -2,7 +2,8 @@ package repositories
 
 import (
 	"context"
-	log "github.com/sirupsen/logrus"
+	"fmt"
+	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,11 +14,13 @@ import (
 
 type UserRepository struct {
 	collection *mongo.Collection
+	logger     *logrus.Logger
 }
 
-func NewUserRepository(userCollection *mongo.Collection) UserRepository {
+func NewUserRepository(mongoClient *mongo.Client, logger *logrus.Logger) UserRepository {
 	return UserRepository{
-		collection: userCollection,
+		collection: mongoClient.Database("startup").Collection("users"),
+		logger:     logger,
 	}
 }
 
@@ -29,13 +32,12 @@ func (repo UserRepository) CreateUser(user User) (primitive.ObjectID, error) {
 			"password":   user.Password,
 			"email":      user.Email,
 			"created_at": time.Now(),
-			"role": [1]string{"user"},
+			"role":       [1]string{"user"},
 		})
 
 	if err != nil {
-		// @TODO: Wrap error so we keep the root cause
-		log.Errorf("Error when creating user with email '%s'", user.Email)
-		return primitive.ObjectID{}, err
+		repo.logger.Error(err)
+		return primitive.ObjectID{}, fmt.Errorf("error when creating new user with email %q: %v", user.Email, err)
 	}
 
 	id := result.InsertedID.(primitive.ObjectID)
@@ -60,8 +62,8 @@ func (repo UserRepository) UpdateUser(id string, user User) error {
 	})
 
 	if err != nil {
-		log.Errorf("Error when updating user with email '%s'", user.Email)
-		return err
+		repo.logger.Error(err)
+		return fmt.Errorf("error when updating user with email %q: %v", user.Email, err)
 	}
 
 	return nil

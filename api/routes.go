@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/startup/commands"
 	"github.com/thomas-bousquet/startup/middlewares"
 	. "github.com/thomas-bousquet/startup/repositories"
@@ -12,22 +13,22 @@ import (
 	"net/http"
 )
 
-func RegisterRoutes(router *mux.Router, mongoDB *mongo.Database) {
+func RegisterRoutes(router *mux.Router, mongoClient *mongo.Client, logger *logrus.Logger) {
 	// Repositories
-	userRepository := NewUserRepository(mongoDB.Collection("users"))
+	userRepository := NewUserRepository(mongoClient, logger)
 	customValidator := NewValidator(validator.New())
 	jwt := JWT.New([]byte("my_secret_key"))
 
 	// Middlewares
-	authenticationMiddleware := middlewares.NewAuthenticationMiddleware(jwt, userRepository)
+	authenticationMiddleware := middlewares.NewAuthenticationMiddleware(jwt, userRepository, logger)
 
 	// Commands
-	createUserHandler := NewHandler(NewCreateUserCommand(userRepository, customValidator))
-	updateUserHandler := NewHandler(NewUpdateUserCommand(userRepository, customValidator))
-	readUserHandler := NewHandler(NewReadUserCommand(userRepository))
-	readUsersHandler := NewHandler(NewReadUsersCommand(userRepository))
-	readUserByEmailHandler := NewHandler(NewReadUserByEmailCommand(userRepository))
-	loginHandler := NewHandler(NewLoginCommand(userRepository, customValidator, jwt))
+	createUserHandler := NewHandler(NewCreateUserCommand(userRepository, customValidator), logger)
+	updateUserHandler := NewHandler(NewUpdateUserCommand(userRepository, customValidator), logger)
+	readUserHandler := NewHandler(NewReadUserCommand(userRepository), logger)
+	readUsersHandler := NewHandler(NewReadUsersCommand(userRepository), logger)
+	readUserByEmailHandler := NewHandler(NewReadUserByEmailCommand(userRepository), logger)
+	loginHandler := NewHandler(NewLoginCommand(userRepository, customValidator, jwt), logger)
 
 	// Router
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})

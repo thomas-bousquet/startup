@@ -2,7 +2,7 @@ package commands
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/thomas-bousquet/startup/api/adapters"
 	. "github.com/thomas-bousquet/startup/repositories"
 	"net/http"
@@ -18,8 +18,8 @@ func NewReadUsersCommand(userRepository UserRepository) ReadUsersCommand {
 	}
 }
 
-func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request) error {
-	log.Info("Read users")
+func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
+	logger.Info("Read users")
 	users, err := c.userRepository.FindUsers()
 
 	if err != nil {
