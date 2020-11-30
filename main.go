@@ -2,22 +2,35 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/thomas-bousquet/startup/api"
 	"github.com/thomas-bousquet/startup/clients"
+	"github.com/thomas-bousquet/startup/utils/logger"
+	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 )
 
 func main() {
 	router := mux.NewRouter()
-	mongoClient := clients.NewMongoClient()
-	api.RegisterRoutes(router, mongoClient.Database("startup"))
+	customLogger := logger.NewLogger()
+	mongoClient := clients.NewMongoClient(customLogger)
 
-	defer mongoClient.Disconnect(context.Background())
+	api.RegisterRoutes(router, mongoClient, customLogger)
 
-	log.Info("Starting server on port 8080")
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		log.Fatal(err)
+	defer disconnect(mongoClient, customLogger)
+
+	//TODO: Make this configurable
+	port := "8080"
+	customLogger.Infof("Starting server on port %q", port)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), router); err != nil {
+		customLogger.Fatal(err)
+	}
+}
+
+func disconnect(client *mongo.Client, logger *logrus.Logger) {
+	if err := client.Disconnect(context.Background()); err != nil {
+		logger.Fatal(err)
 	}
 }

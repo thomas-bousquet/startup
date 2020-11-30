@@ -3,6 +3,7 @@ package middlewares
 import (
 	jwtGo "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/context"
+	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/startup/errors"
 	"github.com/thomas-bousquet/startup/repositories"
 	errorHandler "github.com/thomas-bousquet/startup/utils/error-handler"
@@ -12,14 +13,16 @@ import (
 )
 
 type AuthenticationMiddleware struct {
-	jwt jwt.JWT
+	jwt            jwt.JWT
 	userRepository repositories.UserRepository
+	logger         *logrus.Logger
 }
 
-func NewAuthenticationMiddleware(jwt jwt.JWT, userRepository repositories.UserRepository) AuthenticationMiddleware {
+func NewAuthenticationMiddleware(jwt jwt.JWT, userRepository repositories.UserRepository, logger *logrus.Logger) AuthenticationMiddleware {
 	return AuthenticationMiddleware{
-		jwt: jwt,
+		jwt:            jwt,
 		userRepository: userRepository,
+		logger:         logger,
 	}
 }
 
@@ -33,7 +36,7 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 
 			if len(authorizationHeaderParts) < 2 || strings.ToLower(authorizationHeaderParts[0]) != "bearer" {
 				authorizationError := NewAuthorizationError("Authorization header is not valid")
-				errorHandler.WriteJSONErrorResponse(w, authorizationError)
+				errorHandler.WriteJSONErrorResponse(w, authorizationError, m.logger)
 				return
 			}
 
@@ -42,7 +45,7 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			token, err := m.jwt.ParseToken(authorizationToken)
 
 			if err != nil {
-				errorHandler.WriteJSONErrorResponse(w, err)
+				errorHandler.WriteJSONErrorResponse(w, err, m.logger)
 				return
 			}
 
@@ -53,13 +56,13 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 
 			if err != nil {
 				unexpectedError := NewUnexpectedError()
-				errorHandler.WriteJSONErrorResponse(w, unexpectedError)
+				errorHandler.WriteJSONErrorResponse(w, unexpectedError, m.logger)
 				return
 			}
 
 			if user == nil {
 				authorizationError := NewAuthorizationError("Authorization header is not valid")
-				errorHandler.WriteJSONErrorResponse(w, authorizationError)
+				errorHandler.WriteJSONErrorResponse(w, authorizationError, m.logger)
 				return
 			}
 

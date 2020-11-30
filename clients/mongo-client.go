@@ -6,12 +6,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"log"
 	"os"
 	"time"
 )
 
-func NewMongoClient() *mongo.Client {
+func NewMongoClient(logger *logrus.Logger) *mongo.Client {
 	mongoUrl := os.Getenv("MONGODB_URL") + ":" + os.Getenv("MONGODB_PORT")
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoUrl).SetAuth(options.Credential{
 		Username:                os.Getenv("MONGODB_USERNAME"),
@@ -19,18 +18,18 @@ func NewMongoClient() *mongo.Client {
 	}))
 
 	if err != nil {
-		logrus.Panic(err)
+		logger.Fatal(err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err = client.Connect(ctx); err != nil {
-		logrus.Panic(err)
+		logger.Fatal(err)
 	}
 
 	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-		log.Panic(err)
+		logger.Fatal(err)
 	}
 
 	return client

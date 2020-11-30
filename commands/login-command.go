@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/json"
+	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/startup/api/adapters"
 	. "github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/models"
@@ -25,7 +26,7 @@ func NewLoginCommand(userRepository UserRepository, validator Validator, jwt JWT
 	}
 }
 
-func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request) error {
+func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
 	email, password, ok := r.BasicAuth()
 	defaultErrorMessage := "An error occurred when logging user in"
 

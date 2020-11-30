@@ -2,7 +2,8 @@ package commands
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
+	"fmt"
+	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/models"
 	. "github.com/thomas-bousquet/startup/repositories"
@@ -12,8 +13,8 @@ import (
 )
 
 type CreateUserCommand struct {
-	userRepository UserRepository
-	validator      validator.Validator
+	userRepository  UserRepository
+	validator       validator.Validator
 }
 
 func NewCreateUserCommand(userRepository UserRepository, validator validator.Validator) CreateUserCommand {
@@ -23,8 +24,8 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
-	log.Info("Creating user")
+func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger * logrus.Logger) error {
+	logger.Info("Creating user")
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
@@ -41,7 +42,8 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 	userId, err := c.userRepository.CreateUser(user)
 
 	if err != nil {
-		return err
+		logger.Error(err)
+		return fmt.Errorf("error when creating new user with email %q: %v", user.Email, err)
 	}
 
 	response, err := json.Marshal(map[string]primitive.ObjectID{"id": userId})
@@ -51,7 +53,7 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	 _, err = w.Write(response)
+	_, err = w.Write(response)
 
 	return err
 }

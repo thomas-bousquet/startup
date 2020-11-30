@@ -3,7 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/models"
 	. "github.com/thomas-bousquet/startup/repositories"
@@ -23,8 +23,8 @@ func NewUpdateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request) error {
-	log.Info("Update user")
+func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
+	logger.Info("Update user")
 	vars := mux.Vars(r)
 	id := vars["id"]
 
