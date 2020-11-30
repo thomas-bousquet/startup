@@ -8,21 +8,13 @@ import (
 )
 
 func WriteJSONErrorResponse(w http.ResponseWriter, err error, logger *logrus.Logger) {
+	logger.Error(err)
+
 	switch e := err.(type) {
-	case ValidationError:
-		logger.Error(e)
+	case CustomError:
 		w.WriteHeader(e.HttpCode)
-		doWriteError(w, err, logger)
-	case UnexpectedError:
-		logger.Error(e)
-		w.WriteHeader(e.HttpCode)
-		doWriteError(w, err, logger)
-	case AuthorizationError:
-		logger.Error(e)
-		w.WriteHeader(e.HttpCode)
-		doWriteError(w, err, logger)
+		doWriteError(w, e, logger)
 	default:
-		logger.Error(e)
 		unexpectedError :=  NewUnexpectedError()
 		w.WriteHeader(unexpectedError.HttpCode)
 		doWriteError(w, unexpectedError, logger)

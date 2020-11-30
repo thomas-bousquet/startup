@@ -2,10 +2,6 @@ package errors
 
 import "net/http"
 
-type AuthorizationError struct {
-	BaseError
-}
-
-func NewAuthorizationError(message string) AuthorizationError {
-	return AuthorizationError{BaseError: NewBaseError(http.StatusUnauthorized, "authorization-error", message)}
+func NewAuthorizationError(message string) CustomError {
+	return NewBaseError(http.StatusUnauthorized, "authorization-error", message, nil)
 }
