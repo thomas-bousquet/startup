@@ -2,13 +2,13 @@ package commands
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/sirupsen/logrus"
-	. "github.com/thomas-bousquet/startup/errors"
+	"github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/models"
 	. "github.com/thomas-bousquet/startup/repositories"
 	"github.com/thomas-bousquet/startup/utils/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -24,36 +24,52 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger * logrus.Logger) error {
+func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger * logrus.Logger) *errors.Error {
 	logger.Info("Creating user")
+
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
-		return err
+		logger.Error(err)
+		return errors.NewUnexpectedError()
 	}
 
-	errors := c.validator.ValidateStruct(user)
+	validationErrors := c.validator.ValidateStruct(user)
 
-	if len(errors) > 0 {
-		return NewValidationError("An error occurred when validating user fields", errors)
+	if len(validationErrors) > 0 {
+		return errors.NewValidationError("An error occurred when validating user fields", validationErrors)
 	}
 
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		logger.Errorf("error when encrypting new user's password with email %q: %v", user.Email, err)
+		return errors.NewUnexpectedError()
+	}
+
+	user.Password = string(encryptedPassword)
 	userId, err := c.userRepository.CreateUser(user)
 
 	if err != nil {
-		logger.Error(err)
-		return fmt.Errorf("error when creating new user with email %q: %v", user.Email, err)
+		logger.Errorf("error creating new user: %v", err)
+		return errors.NewUnexpectedError()
 	}
 
 	response, err := json.Marshal(map[string]primitive.ObjectID{"id": userId})
 
 	if err != nil {
-		return err
+		logger.Errorf("error marshalling response: %v", err)
+		return errors.NewUnexpectedError()
 	}
 
 	w.WriteHeader(http.StatusCreated)
 	_, err = w.Write(response)
 
-	return err
+	if err != nil {
+		logger.Errorf("error writing response: %v", err)
+		return errors.NewUnexpectedError()
+	}
+
+	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"github.com/thomas-bousquet/startup/api/adapters"
+	"github.com/thomas-bousquet/startup/errors"
 	. "github.com/thomas-bousquet/startup/repositories"
 	"net/http"
 )
@@ -18,12 +19,14 @@ func NewReadUsersCommand(userRepository UserRepository) ReadUsersCommand {
 	}
 }
 
-func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
-	logger.Info("Read users")
+func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
+	logger.Info("Reading users")
+
 	users, err := c.userRepository.FindUsers()
 
 	if err != nil {
-		return err
+		logger.Errorf("error finding users: %v", err)
+		return errors.NewUnexpectedError()
 	}
 
 	var usersAdapter []adapters.UserAdapter
@@ -34,7 +37,18 @@ func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger
 	}
 
 	response, err := json.Marshal(usersAdapter)
+
+	if err != nil {
+		logger.Errorf("error marshalling response: %v", err)
+		return errors.NewUnexpectedError()
+	}
+
 	_, err = w.Write(response)
 
-	return err
+	if err != nil {
+		logger.Errorf("error writing response: %v", err)
+		return errors.NewUnexpectedError()
+	}
+
+	return nil
 }

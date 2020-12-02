@@ -3,39 +3,34 @@ package error_handler
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	. "github.com/thomas-bousquet/startup/errors"
+	"github.com/thomas-bousquet/startup/errors"
 	"net/http"
 )
 
-func WriteJSONErrorResponse(w http.ResponseWriter, err error, logger *logrus.Logger) {
-	logger.Error(err)
+type ErrorHandler struct{}
 
-	switch e := err.(type) {
-	case CustomError:
-		w.WriteHeader(e.HttpCode)
-		doWriteError(w, e, logger)
-	default:
-		unexpectedError :=  NewUnexpectedError()
-		w.WriteHeader(unexpectedError.HttpCode)
-		doWriteError(w, unexpectedError, logger)
-	}
-}
+func (h ErrorHandler) WriteJSONErrorResponse(w http.ResponseWriter, error *errors.Error, logger *logrus.Logger) {
+	w.WriteHeader(error.HttpCode)
 
-func doWriteError(w http.ResponseWriter, error error, logger *logrus.Logger) {
 	defaultErrorMessage := http.StatusText(http.StatusInternalServerError)
 	defaultHTTPCode := http.StatusInternalServerError
 
 	body, err := json.Marshal(error)
 
 	if err != nil {
-		logger.Error(err)
+		logger.Errorf("error marshalling response: %v", err)
 		http.Error(w, defaultErrorMessage, defaultHTTPCode)
 	}
 
-	_, writeError := w.Write(body)
+	_, err = w.Write(body)
 
-	if writeError != nil {
-		logger.Error(writeError)
+	if err != nil {
+		logger.Errorf("error writing response: %v", err)
 		http.Error(w, defaultErrorMessage, defaultHTTPCode)
 	}
+}
+
+
+func NewErrorHandler() ErrorHandler {
+	return ErrorHandler{}
 }

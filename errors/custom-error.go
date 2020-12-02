@@ -1,14 +1,14 @@
 package errors
 
-type CustomError struct {
+type Error struct {
 	HttpCode        int    `json:"-"`
 	Message         string `json:"message"`
 	LocalizationKey string `json:"localization_key"`
 	Metadata        interface{} `json:"metadata,omitempty"`
 }
 
-func NewBaseError(httpCode int, localizationKey string, message string, metadata interface{}) CustomError {
-	return CustomError{
+func NewError(httpCode int, localizationKey string, message string, metadata interface{}) *Error {
+	return &Error{
 		HttpCode:        httpCode,
 		Message:         message,
 		LocalizationKey: localizationKey,
@@ -16,6 +16,6 @@ func NewBaseError(httpCode int, localizationKey string, message string, metadata
 	}
 }
 
-func (e CustomError) Error() string {
+func (e Error) Error() string {
 	return e.Message
 }

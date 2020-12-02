@@ -77,14 +77,16 @@ func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
 		if result.Err() == mongo.ErrNoDocuments {
 			return nil, nil
 		} else {
-			return nil, NewUnexpectedError()
+			repo.logger.Error(result.Err())
+			return nil, fmt.Errorf("error occured when finding user with email %q: %v", email, result.Err())
 		}
 	}
 
 	err := result.Decode(&user)
 
 	if err != nil {
-		return nil, err
+		repo.logger.Error(err)
+		return nil, NewUnexpectedError()
 	}
 
 	return &user, nil
@@ -137,27 +139,6 @@ func (repo UserRepository) doFindUser(query primitive.M) (*User, error) {
 	var user User
 
 	result := repo.collection.FindOne(context.Background(), query)
-
-	if result.Err() != nil {
-		if result.Err() == mongo.ErrNoDocuments {
-			return nil, nil
-		} else {
-			return nil, NewUnexpectedError()
-		}
-	}
-
-	err := result.Decode(&user)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &user, nil
-}
-
-func (repo UserRepository) AuthenticateUser(email string, password string) (*User, error) {
-	var user User
-	result := repo.collection.FindOne(context.Background(), bson.M{"email": email, "password": password})
 
 	if result.Err() != nil {
 		if result.Err() == mongo.ErrNoDocuments {

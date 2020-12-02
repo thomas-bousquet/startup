@@ -2,6 +2,6 @@ package errors
 
 import "net/http"
 
-func NewUnexpectedError() CustomError {
-	return  NewBaseError(http.StatusInternalServerError, "unexpected-error", http.StatusText(http.StatusInternalServerError), nil)
+func NewUnexpectedError() *Error {
+	return NewError(http.StatusInternalServerError, "unexpected-error", http.StatusText(http.StatusInternalServerError), nil)
 }

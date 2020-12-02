@@ -5,6 +5,6 @@ import (
 	"net/http"
 )
 
-func NewValidationError(message string, errors []validator.Error) CustomError {
- return NewBaseError(http.StatusBadRequest, "validation-error", message, map[string][]validator.Error{"validation": errors})
+func NewValidationError(message string, errors []validator.Error) *Error {
+ return NewError(http.StatusBadRequest, "validation-error", message, map[string][]validator.Error{"validation": errors})
 }

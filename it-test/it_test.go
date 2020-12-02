@@ -19,7 +19,7 @@ func (s *ItTestSuite) SetupTest() {
 	s.baseUrl = "http://localhost:8080"
 
 	for {
-		resp, err := http.Get(s.baseUrl +"/health")
+		resp, err := http.Get(s.baseUrl +"/admin/health")
 
 		if resp != nil {
 			defer resp.Body.Close()

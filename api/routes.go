@@ -6,6 +6,7 @@ import (
 	. "github.com/thomas-bousquet/startup/commands"
 	"github.com/thomas-bousquet/startup/middlewares"
 	. "github.com/thomas-bousquet/startup/repositories"
+	. "github.com/thomas-bousquet/startup/utils/error-handler"
 	JWT "github.com/thomas-bousquet/startup/utils/jwt"
 	. "github.com/thomas-bousquet/startup/utils/validator"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,33 +19,36 @@ func RegisterRoutes(router *mux.Router, mongoClient *mongo.Client, logger *logru
 	userRepository := NewUserRepository(mongoClient, logger)
 	customValidator := NewValidator(validator.New())
 	jwt := JWT.New([]byte("my_secret_key"))
+	errorHandler := NewErrorHandler()
 
 	// Middlewares
-	authenticationMiddleware := middlewares.NewAuthenticationMiddleware(jwt, userRepository, logger)
+	authenticationMiddleware := middlewares.NewAuthenticationMiddleware(jwt, userRepository, logger, errorHandler)
 
 	// Commands
-	createUserHandler := NewHandler(NewCreateUserCommand(userRepository, customValidator), logger)
-	updateUserHandler := NewHandler(NewUpdateUserCommand(userRepository, customValidator), logger)
-	readUserHandler := NewHandler(NewReadUserCommand(userRepository), logger)
-	readUsersHandler := NewHandler(NewReadUsersCommand(userRepository), logger)
-	readUserByEmailHandler := NewHandler(NewReadUserByEmailCommand(userRepository), logger)
-	loginHandler := NewHandler(NewLoginCommand(userRepository, customValidator, jwt), logger)
+	createUserHandler := NewHandler(NewCreateUserCommand(userRepository, customValidator), logger, errorHandler)
+	updateUserHandler := NewHandler(NewUpdateUserCommand(userRepository, customValidator), logger, errorHandler)
+	readUserHandler := NewHandler(NewReadUserCommand(userRepository), logger, errorHandler)
+	readUsersHandler := NewHandler(NewReadUsersCommand(userRepository), logger, errorHandler)
+	//readUserByEmailHandler := NewHandler(NewReadUserByEmailCommand(userRepository), logger, errorHandler)
+	loginHandler := NewHandler(NewLoginCommand(userRepository, customValidator, jwt), logger, errorHandler)
 
 	// Router
-	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})
+	router.HandleFunc("/admin/health", func(w http.ResponseWriter, r *http.Request) {})
 	router.Handle("/login", loginHandler).Methods("POST")
 	router.Handle("/users", createUserHandler).Methods("POST")
 
+	// UserAuthRouter
+	userRouter := router.PathPrefix("/users").Subrouter()
+	userRouter.Use(authenticationMiddleware.ExecuteWithRole("user"))
+	userRouter.Handle("/{id}", updateUserHandler).Methods("PUT")
+	userRouter.Handle("/{id}", readUserHandler).Methods("GET")
+
+
 	// Admin Router
-	adminRouter := router.PathPrefix("").Subrouter()
+	adminRouter := router.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(authenticationMiddleware.ExecuteWithRole("admin"))
 	adminRouter.Handle("/users", readUsersHandler).Methods("GET")
 
-	// User Router
-	userRouter := router.PathPrefix("/users").Subrouter()
-	userRouter.Use(authenticationMiddleware.ExecuteWithRole("user"))
 
-	userRouter.Handle("/{id}", updateUserHandler).Methods("PUT")
-	userRouter.Handle("/{id}", readUserHandler).Methods("GET")
-	userRouter.Handle("/email/{email}", readUserByEmailHandler).Methods("GET")
+	//userRouter.Handle("/email/{email}", readUserByEmailHandler).Methods("GET")
 }
