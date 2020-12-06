@@ -30,7 +30,6 @@ func (h ErrorHandler) WriteJSONErrorResponse(w http.ResponseWriter, error *error
 	}
 }
 
-
 func NewErrorHandler() ErrorHandler {
 	return ErrorHandler{}
 }

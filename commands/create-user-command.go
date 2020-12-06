@@ -13,8 +13,8 @@ import (
 )
 
 type CreateUserCommand struct {
-	userRepository  UserRepository
-	validator       validator.Validator
+	userRepository UserRepository
+	validator      validator.Validator
 }
 
 func NewCreateUserCommand(userRepository UserRepository, validator validator.Validator) CreateUserCommand {
@@ -24,7 +24,7 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger * logrus.Logger) *errors.Error {
+func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
 	logger.Info("Creating user")
 
 	var user User

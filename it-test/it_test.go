@@ -3,11 +3,13 @@ package it_test
 import (
 	"bytes"
 	"encoding/json"
-	faker "github.com/bxcodec/faker/v3"
+	"github.com/bxcodec/faker/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"net/http"
 	"testing"
+	"time"
 )
 
 type ItTestSuite struct {
@@ -17,46 +19,76 @@ type ItTestSuite struct {
 
 func (s *ItTestSuite) SetupTest() {
 	s.baseUrl = "http://localhost:8080"
-
+	exitAt := time.Now().Add(10 * time.Second)
+	readinessProveUrl := s.baseUrl + "/admin/health"
 	for {
-		resp, err := http.Get(s.baseUrl +"/admin/health")
+		resp, err := http.Get(readinessProveUrl)
 
 		if resp != nil {
-			defer resp.Body.Close()
+			resp.Body.Close()
 		}
 
-		if err == nil {
+		if err == nil && resp.StatusCode == 200 {
 			break
+		} else {
+			if time.Now().After(exitAt) {
+				if err != nil {
+					s.FailNow(err.Error())
+				} else {
+					s.FailNow(resp.Status + readinessProveUrl)
+				}
+			}
 		}
 	}
 }
 
 func (s *ItTestSuite) TestUserFlow() {
+
 	userFirstName := faker.FirstName()
 	userLastName := faker.LastName()
 	userEmail := faker.Email()
 	userPassword := faker.Password()
 
-	payload, err := json.Marshal(map[string]string{
+	payload, _ := json.Marshal(map[string]string{
 		"first_name": userFirstName,
-		"last_name": userLastName,
-		"email": userEmail,
-		"password": userPassword,
+		"last_name":  userLastName,
+		"email":      userEmail,
+		"password":   userPassword,
 	})
 
-	if err != nil {
-		s.Suite.T().Fatal(err)
-	}
+	client := http.DefaultClient
 
-	createUserResponse, err := http.Post(s.baseUrl +"/users", "application/json", bytes.NewBuffer(payload))
+	// Create user
+	createUser, _ := client.Post(s.baseUrl+"/users", "application/json", bytes.NewBuffer(payload))
+	assert.Equal(s.T(), http.StatusCreated, createUser.StatusCode, "Should create createUserResponseBody successfully")
+	createUserResponseBody := map[string]string{}
+	body, _ := ioutil.ReadAll(createUser.Body)
+	json.Unmarshal(body, &createUserResponseBody)
+	userId := createUserResponseBody["id"]
+	createUser.Body.Close()
 
-	assert.Equal(s.T(), nil, err)
-	assert.Equal(s.T(), http.StatusCreated, createUserResponse.StatusCode)
+	// Get User without auth
+	getUserWithoutAuthorization, _ := client.Get(s.baseUrl + "/users/" + userId)
+	assert.Equal(s.T(), http.StatusUnauthorized, getUserWithoutAuthorization.StatusCode)
+	getUserWithoutAuthorization.Body.Close()
 
-	//resp := map[string]string{}
-	//userId := createUserResponse.Body.Read(&resp)
-	//
-	//readUser, err := http.Post(s.baseUrl +"/users" + , "application/json", bytes.NewBuffer(payload))
+	// Login
+	loginUserRequest, _ := http.NewRequest("POST", s.baseUrl+"/login", nil)
+	loginUserRequest.SetBasicAuth(userEmail, userPassword)
+	loginUserResponse, _ := client.Do(loginUserRequest)
+	assert.Equal(s.T(), http.StatusOK, loginUserResponse.StatusCode)
+	body, _ = ioutil.ReadAll(loginUserResponse.Body)
+	loginResponseBody := map[string]string{}
+	json.Unmarshal(body, &loginResponseBody)
+	authToken := loginResponseBody["token"]
+	loginUserResponse.Body.Close()
+
+	// Get user with auth
+	getUserResponseWithAuthorizationJWTRequest, _ := http.NewRequest("GET", s.baseUrl+"/users/"+userId, nil)
+	getUserResponseWithAuthorizationJWTRequest.Header.Set("Authorization", "Bearer "+authToken)
+	getUserWithAuthorizationResponse, _ := client.Do(getUserResponseWithAuthorizationJWTRequest)
+	assert.Equal(s.T(), http.StatusOK, getUserWithAuthorizationResponse.StatusCode)
+	getUserWithAuthorizationResponse.Body.Close()
 }
 
 func TestItTestSuite(t *testing.T) {

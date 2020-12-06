@@ -12,7 +12,7 @@ docker-login:
 
 .PHONY: docker-build
 docker-build:
-	@docker build -t $(IMAGE_NAME) .
+	@APP_VERSIONAPP_VERSION=$(APP_VERSION) docker build -t $(IMAGE_NAME) .
 
 .PHONY: docker-tag
 docker-tag:

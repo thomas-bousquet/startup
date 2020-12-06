@@ -43,12 +43,10 @@ func RegisterRoutes(router *mux.Router, mongoClient *mongo.Client, logger *logru
 	userRouter.Handle("/{id}", updateUserHandler).Methods("PUT")
 	userRouter.Handle("/{id}", readUserHandler).Methods("GET")
 
-
 	// Admin Router
 	adminRouter := router.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(authenticationMiddleware.ExecuteWithRole("admin"))
 	adminRouter.Handle("/users", readUsersHandler).Methods("GET")
-
 
 	//userRouter.Handle("/email/{email}", readUserByEmailHandler).Methods("GET")
 }

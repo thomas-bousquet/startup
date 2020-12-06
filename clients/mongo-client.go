@@ -13,8 +13,8 @@ import (
 func NewMongoClient(logger *logrus.Logger) *mongo.Client {
 	mongoUrl := os.Getenv("MONGODB_URL") + ":" + os.Getenv("MONGODB_PORT")
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoUrl).SetAuth(options.Credential{
-		Username:                os.Getenv("MONGODB_USERNAME"),
-		Password:                os.Getenv("MONGODB_PASSWORD"),
+		Username: os.Getenv("MONGODB_USERNAME"),
+		Password: os.Getenv("MONGODB_PASSWORD"),
 	}))
 
 	if err != nil {

@@ -12,9 +12,14 @@ import (
 	"net/http"
 )
 
+var (
+	version string
+)
+
 func main() {
-	router := mux.NewRouter()
 	customLogger := logger.NewLogger()
+	customLogger.Infof("Starting application version %q", version)
+	router := mux.NewRouter()
 	mongoClient := clients.NewMongoClient(customLogger)
 
 	api.RegisterRoutes(router, mongoClient, customLogger)

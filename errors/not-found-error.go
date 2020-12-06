@@ -6,5 +6,5 @@ import (
 )
 
 func NewNotFoundError(entity string) *Error {
-	return NewError(http.StatusUnauthorized, "not-found", fmt.Sprintf("%s was not found", entity), nil)
+	return NewError(http.StatusNotFound, "not-found", fmt.Sprintf("%s was not found", entity), nil)
 }

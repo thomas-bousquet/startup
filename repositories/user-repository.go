@@ -52,8 +52,7 @@ func (repo UserRepository) UpdateUser(id string, user User) error {
 		return err
 	}
 
-	_, err = repo.collection.UpdateOne(context.Background(), bson.M{"_id": objectId}, bson.M{"$set":
-	bson.M{
+	_, err = repo.collection.UpdateOne(context.Background(), bson.M{"_id": objectId}, bson.M{"$set": bson.M{
 		"first_name": user.FirstName,
 		"last_name":  user.LastName,
 		"email":      user.Email,
