@@ -2,8 +2,7 @@ version: "3.8"
 services:
   mongo:
     image: mongo
-    container_name: startup-db
-    restart: always
+    container_name: mongo
     ports:
       - 27017:27017
     environment:

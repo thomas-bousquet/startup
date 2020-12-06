@@ -2,9 +2,17 @@
 start-local:
 	@docker-compose -f docker-compose.local.yml up --remove-orphans --force-recreate --build
 
+.PHONY: start-docker
+start-docker:
+	@docker-compose -f docker-compose.docker.yml up --remove-orphans --force-recreate --build
+
 .PHONY: stop-local
 stop-local:
 	@docker-compose -f docker-compose.local.yml down
+
+.PHONY: stop-docker
+stop-docker:
+	@docker-compose -f docker-compose.docker.yml down
 
 .PHONY: docker-login
 docker-login:

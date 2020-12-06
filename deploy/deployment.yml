@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: startup
-          image: thomasbousquet/startup:latest
+          image: thomasbousquet/startup
           env:
             - name: MONGODB_USERNAME
               valueFrom:
