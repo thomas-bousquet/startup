@@ -1,4 +1,5 @@
 FROM golang:1.15-alpine AS builder
+ARG APP_VERSION
 WORKDIR /build
 COPY . .
 RUN GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=${APP_VERSION}" -o app
