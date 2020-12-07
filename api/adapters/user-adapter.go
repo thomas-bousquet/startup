@@ -1,7 +1,7 @@
 package adapters
 
 import (
-	"github.com/thomas-bousquet/startup/models"
+	"github.com/thomas-bousquet/user-service/models"
 )
 
 type UserAdapter struct {

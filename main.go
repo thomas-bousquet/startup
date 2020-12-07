@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/startup/api"
-	"github.com/thomas-bousquet/startup/clients"
-	"github.com/thomas-bousquet/startup/utils/logger"
+	"github.com/thomas-bousquet/user-service/api"
+	"github.com/thomas-bousquet/user-service/clients"
+	"github.com/thomas-bousquet/user-service/utils/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 )

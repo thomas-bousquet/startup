@@ -16,7 +16,7 @@ services:
       - MONGODB_PASSWORD=root
     ports:
       - 8080:8080
-    image: thomasbousquet/startup:latest
+    image: thomasbousquet/user-service:latest
     container_name: user-service
     depends_on:
       - mongo

@@ -3,7 +3,7 @@ package error_handler
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/startup/errors"
+	"github.com/thomas-bousquet/user-service/errors"
 	"net/http"
 )
 

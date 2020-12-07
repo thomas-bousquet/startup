@@ -1,7 +1,7 @@
 
-# startup
-<a href="https://github.com/thomas-bousquet/startup/actions?query=workflow%3AProjectPipeline">
-    <img src="https://github.com/thomas-bousquet/startup/workflows/ProjectPipeline/badge.svg" />
+# user-service
+<a href="https://github.com/thomas-bousquet/user-service/actions?query=workflow%3AProjectPipeline">
+    <img src="https://github.com/thomas-bousquet/user-service/workflows/ProjectPipeline/badge.svg" />
 </a>
 <br>
 <br>
@@ -24,7 +24,7 @@ This project uses MongoDB as a database.
 - If you want to stop, run `make stop-local`
 
 ###### Locally with the application in a specific version
-- Run `make start-docker`. This will pull the image of the application tagged `latest`, you can change the value in `docker-compose.docker.yml` to your will. More information about the image here: https://hub.docker.com/r/thomasbousquet/startup
+- Run `make start-docker`. This will pull the image of the application tagged `latest`, you can change the value in `docker-compose.docker.yml` to your will. More information about the image here: https://hub.docker.com/r/thomasbousquet/user-service
 - If you want to stop, run `make stop-docker`
 
 

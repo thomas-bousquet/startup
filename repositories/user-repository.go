@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	. "github.com/thomas-bousquet/startup/errors"
-	. "github.com/thomas-bousquet/startup/models"
+	. "github.com/thomas-bousquet/user-service/errors"
+	. "github.com/thomas-bousquet/user-service/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,7 +19,7 @@ type UserRepository struct {
 
 func NewUserRepository(mongoClient *mongo.Client, logger *logrus.Logger) UserRepository {
 	return UserRepository{
-		collection: mongoClient.Database("startup").Collection("users"),
+		collection: mongoClient.Database("user-service").Collection("users"),
 		logger:     logger,
 	}
 }

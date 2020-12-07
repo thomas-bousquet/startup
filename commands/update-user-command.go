@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/startup/errors"
-	. "github.com/thomas-bousquet/startup/models"
-	. "github.com/thomas-bousquet/startup/repositories"
-	"github.com/thomas-bousquet/startup/utils/validator"
+	"github.com/thomas-bousquet/user-service/errors"
+	. "github.com/thomas-bousquet/user-service/models"
+	. "github.com/thomas-bousquet/user-service/repositories"
+	"github.com/thomas-bousquet/user-service/utils/validator"
 	"net/http"
 )
 

@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "9e8b9e94-465f-44c9-86e9-cdcfc292a180",
-		"name": "Startup",
+		"name": "user-service",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

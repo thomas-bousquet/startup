@@ -1,4 +1,4 @@
-module github.com/thomas-bousquet/startup
+module github.com/thomas-bousquet/user-service
 
 go 1.15
 

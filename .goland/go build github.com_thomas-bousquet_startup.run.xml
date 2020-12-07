@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="startup" type="GoApplicationRunConfiguration" factoryName="Go Application">
-    <module name="startup" />
+  <configuration default="false" name="user-service" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="user-service" />
     <working_directory value="$PROJECT_DIR$" />
     <envs>
       <env name="MONGODB_USERNAME" value="root" />
@@ -9,7 +9,7 @@
       <env name="MONGODB_PORT" value="27017" />
     </envs>
     <kind value="PACKAGE" />
-    <package value="github.com/thomas-bousquet/startup" />
+    <package value="github.com/thomas-bousquet/user-service" />
     <directory value="$PROJECT_DIR$" />
     <method v="2" />
   </configuration>

@@ -3,9 +3,9 @@ package commands
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/startup/api/adapters"
-	"github.com/thomas-bousquet/startup/errors"
-	. "github.com/thomas-bousquet/startup/repositories"
+	"github.com/thomas-bousquet/user-service/api/adapters"
+	"github.com/thomas-bousquet/user-service/errors"
+	. "github.com/thomas-bousquet/user-service/repositories"
 	"net/http"
 )
 

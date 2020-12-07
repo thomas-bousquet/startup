@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/startup/errors"
+	"github.com/thomas-bousquet/user-service/errors"
 	"net/http"
 )
 

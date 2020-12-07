@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: startup
+  name: user-service
 spec:
   selector:
     matchLabels:
-      app: startup
+      app: user-service
   template:
     metadata:
       labels:
-        app: startup
+        app: user-service
     spec:
       containers:
-        - name: startup
-          image: thomasbousquet/startup
+        - name: user-service
+          image: thomasbousquet/user-service
           env:
             - name: MONGODB_USERNAME
               valueFrom:

@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/sirupsen/logrus"
-	. "github.com/thomas-bousquet/startup/utils/error-handler"
+	. "github.com/thomas-bousquet/user-service/utils/error-handler"
 	"net/http"
 )
 
