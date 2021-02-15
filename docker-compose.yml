@@ -1,23 +1,14 @@
 version: "3.8"
 services:
   mongo:
-    image: mongo
+    image: mongo:4
     container_name: mongo
     ports:
       - 27017:27017
+    healthcheck:
+      test: mongo
+      interval: 1s
+      retries: 10
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
-  user-service:
-    environment:
-      - MONGODB_URL=mongodb://mongo
-      - MONGODB_PORT=27017
-      - MONGODB_USERNAME=root
-      - MONGODB_PASSWORD=root
-    ports:
-      - 8080:8080
-    build:
-      context: .
-    container_name: user-service
-    depends_on:
-      - mongo
