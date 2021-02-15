@@ -6,19 +6,15 @@ on:
   push:
     branches: 'master'
 jobs:
-  integration-tests:
+  tests:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
-      - name: Start DockerCompose
-        run: make start DETACH=true
-      - name: Run integration tests
+      - name: Run tests
         run: make test
-      - name: Print suite logs
-        run: make logs
   publish:
-    needs: integration-tests
+    needs: tests
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout current branch

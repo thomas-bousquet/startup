@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
 )
 
 type ItTestSuite struct {
@@ -19,27 +18,6 @@ type ItTestSuite struct {
 
 func (s *ItTestSuite) SetupTest() {
 	s.baseUrl = "http://localhost:8080"
-	exitAt := time.Now().Add(10 * time.Second)
-	readinessProveUrl := s.baseUrl + "/admin/health"
-	for {
-		resp, err := http.Get(readinessProveUrl)
-
-		if resp != nil {
-			resp.Body.Close()
-		}
-
-		if err == nil && resp.StatusCode == 200 {
-			break
-		} else {
-			if time.Now().After(exitAt) {
-				if err != nil {
-					s.FailNow(err.Error())
-				} else {
-					s.FailNow(resp.Status + readinessProveUrl)
-				}
-			}
-		}
-	}
 }
 
 func (s *ItTestSuite) TestUserFlow() {

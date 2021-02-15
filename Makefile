@@ -1,19 +1,3 @@
-.PHONY: start-local
-start-local:
-	@docker-compose -f docker-compose.local.yml up --remove-orphans --force-recreate --build
-
-.PHONY: start-docker
-start-docker:
-	@docker-compose -f docker-compose.docker.yml up --remove-orphans --force-recreate --build
-
-.PHONY: stop-local
-stop-local:
-	@docker-compose -f docker-compose.local.yml down
-
-.PHONY: stop-docker
-stop-docker:
-	@docker-compose -f docker-compose.docker.yml down
-
 .PHONY: docker-login
 docker-login:
 	@docker login --username=$(DOCKER_USERNAME) --password=$(DOCKER_ACCESS_TOKEN)
@@ -32,22 +16,34 @@ docker-push:
 	@docker push $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):$(TAG)
 	@docker push $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):latest
 
-.PHONY: start
-start:
+.PHONY: start-docker
+start-docker:
 ifeq ($(DETACH),true)
-	@docker-compose up --remove-orphans --force-recreate --build -d
+	@docker-compose up -d
 else
-	@docker-compose up --remove-orphans --force-recreate --build
+	@docker-compose up
 endif
 
-.PHONY: stop
-stop:
+.PHONY: stop-docker
+stop-docker:
 	@docker-compose down
 
 .PHONY: logs
-make logs:
+logs:
 	@docker-compose logs
+
+.PHONY: start-app
+start-app:
+ifeq ($(DETACH),true)
+	@. ./test.env && nohup go run main.go & bash ./script/wait-for-healthy-app.sh
+else
+	@. ./test.env && go run main.go
+endif
 
 .PHONY: test
 test:
+	@make start-docker DETACH=true
+	@CONTAINER=mongo bash ./script/wait-for-healthy-container.sh
+	@make start-app DETACH=true
 	@go test ./... -count=1
+	@make stop-docker
