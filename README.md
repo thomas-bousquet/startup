@@ -1,10 +1,9 @@
 
 # user-service
-<a href="https://github.com/thomas-bousquet/user-service/actions?query=workflow%3AProjectPipeline">
-    <img src="https://github.com/thomas-bousquet/user-service/workflows/ProjectPipeline/badge.svg" />
-</a>
+[![Tests](https://github.com/thomas-bousquet/user-service/actions/workflows/main.yml/badge.svg)](https://github.com/thomas-bousquet/user-service/actions/workflows/main.yml)
 <br>
 <br>
+
 
 This project is an API in charge of user and account management. The postman collection is available at `postman.json`.<br>
 For now, tests only include a suite of integration tests that ensures there is no regression over time on the main usecases. 

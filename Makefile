@@ -28,18 +28,6 @@ endif
 stop-docker:
 	@docker-compose down
 
-.PHONY: logs
-logs:
-	@docker-compose logs
-
-.PHONY: start-app
-start-app:
-ifeq ($(DETACH),true)
-	@. ./test.env && nohup go run main.go & bash ./script/wait-for-healthy-app.sh
-else
-	@. ./test.env && go run main.go
-endif
-
 .PHONY: test
 test:
 	@make start-docker DETACH=true
