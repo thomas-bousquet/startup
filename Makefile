@@ -16,22 +16,23 @@ docker-push:
 	@docker push $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):$(TAG)
 	@docker push $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY):latest
 
-.PHONY: start-docker
-start-docker:
+.PHONY: start
+start:
 ifeq ($(DETACH),true)
 	@docker-compose up -d
 else
 	@docker-compose up
 endif
 
-.PHONY: stop-docker
-stop-docker:
+.PHONY: stop
+stop:
 	@docker-compose down
 
 .PHONY: test
 test:
-	@make start-docker DETACH=true
+	@make start DETACH=true
 	@CONTAINER=mongo bash ./script/wait-for-healthy-container.sh
-	@make start-app DETACH=true
+	@CONTAINER=user-service bash ./script/wait-for-healthy-container.sh
+	@make start DETACH=true
 	@go test ./... -count=1
-	@make stop-docker
+	@make stop

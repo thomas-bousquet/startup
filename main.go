@@ -10,6 +10,7 @@ import (
 	"github.com/thomas-bousquet/user-service/utils/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
+	"os"
 )
 
 var (
@@ -27,7 +28,7 @@ func main() {
 	defer disconnect(mongoClient, customLogger)
 
 	//TODO: Make this configurable
-	port := "8080"
+	port := os.Getenv("APP_PORT")
 	customLogger.Infof("Starting server on port %q", port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), router); err != nil {
 		customLogger.Fatal(err)

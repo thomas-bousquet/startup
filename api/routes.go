@@ -33,7 +33,7 @@ func RegisterRoutes(router *mux.Router, mongoClient *mongo.Client, logger *logru
 	loginHandler := NewHandler(NewLoginCommand(userRepository, customValidator, jwt), logger, errorHandler)
 
 	// Router
-	router.HandleFunc("/admin/health", func(w http.ResponseWriter, r *http.Request) {})
+	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})
 	router.Handle("/login", loginHandler).Methods("POST")
 	router.Handle("/users", createUserHandler).Methods("POST")
 

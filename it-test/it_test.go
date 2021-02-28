@@ -17,7 +17,7 @@ type ItTestSuite struct {
 }
 
 func (s *ItTestSuite) SetupTest() {
-	s.baseUrl = "http://localhost:8080"
+	s.baseUrl = "http://localhost:8081"
 }
 
 func (s *ItTestSuite) TestUserFlow() {
