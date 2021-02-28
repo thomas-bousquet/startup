@@ -1,7 +1,7 @@
 
 # user-service
-<a href="https://github.com/thomas-bousquet/user-service/actions?query=workflow%3AProjectPipeline">
-    <img src="https://github.com/thomas-bousquet/user-service/workflows/ProjectPipeline/badge.svg" />
+<a href="https://github.com/thomas-bousquet/user-service/actions?query=workflow%3ATests">
+    <img src="https://github.com/thomas-bousquet/user-service/workflows/Tests/badge.svg" />
 </a>
 <br>
 <br>
