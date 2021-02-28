@@ -12,3 +12,24 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
+  user-service:
+    working_dir: /user-service
+    image: golang:1.15
+    ports:
+      - 8081:8081
+    volumes:
+      - .:/user-service
+    container_name: user-service
+    depends_on:
+      - mongo
+    command: go run main.go
+    environment:
+      - MONGODB_PORT=27017
+      - MONGODB_USERNAME=root
+      - MONGODB_PASSWORD=root
+      - MONGODB_URL=mongodb://mongo
+      - APP_PORT=8081
+    healthcheck:
+      test: curl --fail http://localhost:8081/health || exit 1
+      interval: 1s
+      retries: 10

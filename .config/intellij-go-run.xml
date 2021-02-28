@@ -7,6 +7,7 @@
       <env name="MONGODB_PASSWORD" value="root" />
       <env name="MONGODB_URL" value="mongodb://localhost" />
       <env name="MONGODB_PORT" value="27017" />
+      <env name="APP_PORT" value="8080" />
     </envs>
     <kind value="PACKAGE" />
     <package value="github.com/thomas-bousquet/user-service" />
