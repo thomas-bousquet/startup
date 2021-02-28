@@ -24,8 +24,6 @@ func NewUpdateUserCommand(userRepository UserRepository, validator validator.Val
 }
 
 func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
-	logger.Info("Updating user")
-
 	vars := mux.Vars(r)
 	id := vars["id"]
 

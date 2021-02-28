@@ -20,8 +20,6 @@ func NewReadUsersCommand(userRepository UserRepository) ReadUsersCommand {
 }
 
 func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
-	logger.Info("Reading users")
-
 	users, err := c.userRepository.FindUsers()
 
 	if err != nil {

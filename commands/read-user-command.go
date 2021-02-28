@@ -21,8 +21,6 @@ func NewReadUserCommand(userRepository UserRepository) ReadUserCommand {
 }
 
 func (c ReadUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
-	logger.Info("Reading user")
-
 	vars := mux.Vars(r)
 	id := vars["id"]
 

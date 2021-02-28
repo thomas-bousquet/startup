@@ -28,8 +28,6 @@ func NewLoginCommand(userRepository UserRepository, validator Validator, jwt JWT
 }
 
 func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
-	logger.Info("Logging user")
-
 	email, password, ok := r.BasicAuth()
 	defaultErrorMessage := "An error occurred when logging user"
 

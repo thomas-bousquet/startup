@@ -21,8 +21,6 @@ func NewReadUserByEmailCommand(userRepository UserRepository) ReadUserByEmailCom
 }
 
 func (c ReadUserByEmailCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
-	logger.Info("Reading user by email")
-
 	vars := mux.Vars(r)
 	email := vars["email"]
 
