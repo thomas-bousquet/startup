@@ -33,6 +33,5 @@ test:
 	@make start DETACH=true
 	@CONTAINER=mongo bash ./script/wait-for-healthy-container.sh
 	@CONTAINER=user-service bash ./script/wait-for-healthy-container.sh
-	@make start DETACH=true
 	@go test ./... -count=1
 	@make stop
