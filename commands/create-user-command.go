@@ -7,7 +7,6 @@ import (
 	. "github.com/thomas-bousquet/user-service/models"
 	. "github.com/thomas-bousquet/user-service/repositories"
 	"github.com/thomas-bousquet/user-service/utils/validator"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
@@ -24,13 +23,13 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
+func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
-		logger.Error(err)
-		return errors.NewUnexpectedError()
+		logger.Errorf("%v", err)
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	validationErrors := c.validator.ValidateStruct(user)
@@ -43,7 +42,7 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error when encrypting new user's password with email %q: %v", user.Email, err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	user.Password = string(encryptedPassword)
@@ -51,14 +50,14 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error creating new user: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
-	response, err := json.Marshal(map[string]primitive.ObjectID{"id": userId})
+	response, err := json.Marshal(map[string]string{"id": *userId})
 
 	if err != nil {
 		logger.Errorf("error marshalling response: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	w.WriteHeader(http.StatusCreated)
@@ -66,7 +65,7 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error writing response: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil

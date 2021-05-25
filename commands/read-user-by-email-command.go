@@ -20,33 +20,33 @@ func NewReadUserByEmailCommand(userRepository UserRepository) ReadUserByEmailCom
 	}
 }
 
-func (c ReadUserByEmailCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
+func (c ReadUserByEmailCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
 	vars := mux.Vars(r)
 	email := vars["email"]
 
 	user, err := c.userRepository.FindUserByEmail(email)
 
 	if err != nil {
-		logger.Error(err)
-		return errors.NewUnexpectedError()
+		logger.Errorf("%v", err)
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	if user == nil {
-		return errors.NewNotFoundError("user")
+		return errors.NewResourceNotFoundError(errors.USER, email)
 	}
 
 	response, err := json.Marshal(adapters.NewUserAdapter(user))
 
 	if err != nil {
 		logger.Errorf("error marshalling response: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	_, err = w.Write(response)
 
 	if err != nil {
 		logger.Errorf("error writing response: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil
