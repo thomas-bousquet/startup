@@ -2,10 +2,12 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/user-service/errors"
 	. "github.com/thomas-bousquet/user-service/models"
+	uuid "github.com/thomas-bousquet/user-service/utils/id-generator"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,9 +26,11 @@ func NewUserRepository(mongoClient *mongo.Client, logger *logrus.Logger) UserRep
 	}
 }
 
-func (repo UserRepository) CreateUser(user User) (primitive.ObjectID, error) {
-	result, err := repo.collection.InsertOne(context.Background(),
+func (repo UserRepository) CreateUser(user User) (*string, error) {
+	documentId := uuid.New().String()
+	_, err := repo.collection.InsertOne(context.Background(),
 		bson.M{
+			"id":         documentId,
 			"first_name": user.FirstName,
 			"last_name":  user.LastName,
 			"password":   user.Password,
@@ -36,23 +40,15 @@ func (repo UserRepository) CreateUser(user User) (primitive.ObjectID, error) {
 		})
 
 	if err != nil {
-		repo.logger.Error(err)
-		return primitive.ObjectID{}, fmt.Errorf("error when creating new user with email %q: %v", user.Email, err)
+		repo.logger.Errorf("%v", err)
+		return nil, fmt.Errorf("error when creating new user with email %q: %v", user.Email, err)
 	}
 
-	id := result.InsertedID.(primitive.ObjectID)
-
-	return id, nil
+	return &documentId, nil
 }
 
 func (repo UserRepository) UpdateUser(id string, user User) error {
-	objectId, err := primitive.ObjectIDFromHex(id)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = repo.collection.UpdateOne(context.Background(), bson.M{"_id": objectId}, bson.M{"$set": bson.M{
+	_, err := repo.collection.UpdateOne(context.Background(), bson.M{"id": id}, bson.M{"$set": bson.M{
 		"first_name": user.FirstName,
 		"last_name":  user.LastName,
 		"email":      user.Email,
@@ -61,7 +57,7 @@ func (repo UserRepository) UpdateUser(id string, user User) error {
 	})
 
 	if err != nil {
-		repo.logger.Error(err)
+		repo.logger.Errorf("%v", err)
 		return fmt.Errorf("error when updating user with email %q: %v", user.Email, err)
 	}
 
@@ -76,7 +72,7 @@ func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
 		if result.Err() == mongo.ErrNoDocuments {
 			return nil, nil
 		} else {
-			repo.logger.Error(result.Err())
+			repo.logger.Errorf("%v", result.Err())
 			return nil, fmt.Errorf("error occured when finding user with email %q: %v", email, result.Err())
 		}
 	}
@@ -84,31 +80,19 @@ func (repo UserRepository) FindUserByEmail(email string) (*User, error) {
 	err := result.Decode(&user)
 
 	if err != nil {
-		repo.logger.Error(err)
-		return nil, NewUnexpectedError()
+		repo.logger.Errorf("%v", err)
+		return nil, NewUnexpectedError(nil, nil)
 	}
 
 	return &user, nil
 }
 
 func (repo UserRepository) FindUserWithRole(id string, role string) (*User, error) {
-	objectId, err := primitive.ObjectIDFromHex(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return repo.doFindUser(bson.M{"_id": objectId, "role": role})
+	return repo.doFindUser(bson.M{"id": id, "role": role})
 }
 
 func (repo UserRepository) FindUser(id string) (*User, error) {
-	objectId, err := primitive.ObjectIDFromHex(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return repo.doFindUser(bson.M{"_id": objectId})
+	return repo.doFindUser(bson.M{"id": id})
 }
 
 func (repo UserRepository) FindUsers() ([]User, error) {
@@ -140,10 +124,11 @@ func (repo UserRepository) doFindUser(query primitive.M) (*User, error) {
 	result := repo.collection.FindOne(context.Background(), query)
 
 	if result.Err() != nil {
-		if result.Err() == mongo.ErrNoDocuments {
+		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
 			return nil, nil
 		} else {
-			return nil, NewUnexpectedError()
+			repo.logger.Errorf("%v", result.Err())
+			return nil, NewUnexpectedError(nil, nil)
 		}
 	}
 

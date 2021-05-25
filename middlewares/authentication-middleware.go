@@ -32,14 +32,12 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 
 	return func(next http.Handler) http.Handler {
 
-		defaultErrorMessage := "Authorization header is not valid"
-
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			authorizationHeaderParts := strings.Fields(r.Header.Get("Authorization"))
 
 			if len(authorizationHeaderParts) < 2 || strings.ToLower(authorizationHeaderParts[0]) != "bearer" {
-				authorizationError := errors.NewAuthorizationError(defaultErrorMessage)
+				authorizationError := errors.NewAuthorizationError(nil)
 				m.errorHandler.WriteJSONErrorResponse(w, authorizationError, m.logger)
 				return
 			}
@@ -49,7 +47,7 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			token, err := m.jwt.ParseToken(authorizationToken)
 
 			if err != nil {
-				m.errorHandler.WriteJSONErrorResponse(w, errors.NewAuthorizationError(defaultErrorMessage), m.logger)
+				m.errorHandler.WriteJSONErrorResponse(w, errors.NewAuthorizationError(nil), m.logger)
 				return
 			}
 
@@ -59,13 +57,13 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			user, err := m.userRepository.FindUserWithRole(userId, role)
 
 			if err != nil {
-				unexpectedError := errors.NewUnexpectedError()
+				unexpectedError := errors.NewUnexpectedError(nil, nil)
 				m.errorHandler.WriteJSONErrorResponse(w, unexpectedError, m.logger)
 				return
 			}
 
 			if user == nil {
-				authorizationError := errors.NewAuthorizationError(defaultErrorMessage)
+				authorizationError := errors.NewAuthorizationError(nil)
 				m.errorHandler.WriteJSONErrorResponse(w, authorizationError, m.logger)
 				return
 			}
