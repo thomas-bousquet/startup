@@ -34,7 +34,7 @@ func (jwt JWT) CreateToken(user User) (*string, error) {
 	signedToken, err := token.SignedString(jwt.SecretKey)
 
 	if err != nil {
-		return nil, NewUnexpectedError()
+		return nil, NewUnexpectedError(nil, nil)
 	}
 
 	return &signedToken, nil
@@ -48,7 +48,7 @@ func (jwt JWT) ParseToken(token string) (*jwtGo.Token, error) {
 	})
 
 	if err != nil {
-		return nil, errors.NewAuthorizationError("Authorization header is not valid")
+		return nil, errors.NewAuthorizationError(nil)
 	}
 
 	return t, nil

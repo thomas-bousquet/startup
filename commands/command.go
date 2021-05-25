@@ -7,5 +7,5 @@ import (
 )
 
 type Command interface {
-	Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error
+	Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError
 }
