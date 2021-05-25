@@ -1,7 +1,5 @@
 package errors
 
-import "net/http"
-
-func NewAuthorizationError(message string) *Error {
-	return NewError(http.StatusUnauthorized, "authorization-error", message, nil)
+func NewAuthorizationError(metadata map[string]interface{}) *AppError {
+	return NewError("authorization-error", nil, metadata)
 }

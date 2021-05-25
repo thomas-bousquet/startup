@@ -2,9 +2,15 @@ package errors
 
 import (
 	"fmt"
-	"net/http"
 )
 
-func NewNotFoundError(entity string) *Error {
-	return NewError(http.StatusNotFound, "not-found", fmt.Sprintf("%s was not found", entity), nil)
+type resource string
+
+const (
+	USER resource = "user"
+)
+
+func NewResourceNotFoundError(resource resource, id string) *AppError {
+	message := fmt.Sprintf("%s with id %s was not found", resource, id)
+	return NewError("not-found-error", &message, map[string]interface{}{"resource": resource})
 }

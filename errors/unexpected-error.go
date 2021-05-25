@@ -1,7 +1,5 @@
 package errors
 
-import "net/http"
-
-func NewUnexpectedError() *Error {
-	return NewError(http.StatusInternalServerError, "unexpected-error", http.StatusText(http.StatusInternalServerError), nil)
+func NewUnexpectedError(message *string, metadata map[string]interface{}) *AppError {
+	return NewError("unexpected-error", message, metadata)
 }

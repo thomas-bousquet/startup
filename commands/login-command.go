@@ -27,12 +27,11 @@ func NewLoginCommand(userRepository UserRepository, validator Validator, jwt JWT
 	}
 }
 
-func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
+func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
 	email, password, ok := r.BasicAuth()
-	defaultErrorMessage := "An error occurred when logging user"
 
 	if !ok {
-		return errors.NewAuthorizationError(defaultErrorMessage)
+		return errors.NewAuthorizationError(nil)
 	}
 
 	credentials := NewCredentials(email, password)
@@ -48,39 +47,39 @@ func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *lo
 	user, err := c.userRepository.FindUserByEmail(credentials.Email)
 
 	if err != nil {
-		logger.Error(err)
-		return errors.NewUnexpectedError()
+		logger.Errorf("%v", err)
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	if user == nil {
-		return errors.NewAuthorizationError(defaultErrorMessage)
+		return errors.NewAuthorizationError(nil)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
 	if err != nil {
 		logger.Errorf("error when comparing passwords: %v", err)
-		return errors.NewAuthorizationError(defaultErrorMessage)
+		return errors.NewAuthorizationError(nil)
 	}
 
 	token, err := c.jwt.CreateToken(*user)
 
 	if err != nil {
 		logger.Errorf("error creating JWT token: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	response, err := json.Marshal(NewLoginAdapter(*token))
 
 	if err != nil {
 		logger.Errorf("error marshalling response: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	_, err = w.Write(response)
 
 	if err != nil {
 		logger.Errorf("error writing response %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil
