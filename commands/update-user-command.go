@@ -23,7 +23,7 @@ func NewUpdateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.Error {
+func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -32,7 +32,7 @@ func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error unmarshalling request: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	user.Id = id
@@ -47,7 +47,7 @@ func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error updating user: %v", err)
-		return errors.NewUnexpectedError()
+		return errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil

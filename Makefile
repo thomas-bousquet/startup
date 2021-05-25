@@ -35,3 +35,7 @@ test:
 	@CONTAINER=user-service bash ./script/wait-for-healthy-container.sh
 	@go test ./... -count=1
 	@make stop
+
+.PHONY: fmt
+fmt:
+	go fmt ./...
