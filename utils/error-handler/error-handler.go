@@ -2,8 +2,9 @@ package error_handler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/user-service/errors"
+	"github.com/thomas-bousquet/user-service/app_errors"
 	"net/http"
 )
 
@@ -33,7 +34,7 @@ var defaultErrorKey = "unexpected-error"
 var defaultErrorMessage = ""
 var defaultErrorCode = http.StatusInternalServerError
 
-func appErrorToHttpResponse(error *errors.AppError) HttpError {
+func appErrorToHttpResponse(error *app_errors.AppError) HttpError {
 	httpKey := defaultErrorKey
 	httpMessage := defaultErrorMessage
 	httpCode := defaultErrorCode
@@ -57,24 +58,27 @@ func appErrorToHttpResponse(error *errors.AppError) HttpError {
 	}
 }
 
-func (h ErrorHandler) WriteJSONErrorResponse(w http.ResponseWriter, error *errors.AppError, logger *logrus.Logger) {
+func (h ErrorHandler) WriteJSONErrorResponse(w http.ResponseWriter, e error, logger *logrus.Logger) {
+	var appErrorType *app_errors.AppError
+	if errors.As(e, &appErrorType) {
+		httpError := appErrorToHttpResponse((e).(*app_errors.AppError))
+		w.WriteHeader(httpError.Code)
 
-	httpError := appErrorToHttpResponse(error)
-	w.WriteHeader(httpError.Code)
+		body, err := json.Marshal(e)
 
-	body, err := json.Marshal(error)
+		if err != nil {
+			logger.Errorf("e marshalling response: %v", err)
+			http.Error(w, defaultErrorMessage, defaultErrorCode)
+		}
 
-	if err != nil {
-		logger.Errorf("error marshalling response: %v", err)
-		http.Error(w, defaultErrorMessage, defaultErrorCode)
+		_, err = w.Write(body)
+
+		if err != nil {
+			logger.Errorf("e writing response: %v", err)
+			http.Error(w, defaultErrorMessage, defaultErrorCode)
+		}
 	}
-
-	_, err = w.Write(body)
-
-	if err != nil {
-		logger.Errorf("error writing response: %v", err)
-		http.Error(w, defaultErrorMessage, defaultErrorCode)
-	}
+	// TODO: Handler other cases
 }
 
 func NewErrorHandler() ErrorHandler {

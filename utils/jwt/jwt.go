@@ -2,8 +2,8 @@ package jwt
 
 import (
 	jwtGo "github.com/dgrijalva/jwt-go"
-	"github.com/thomas-bousquet/user-service/errors"
-	. "github.com/thomas-bousquet/user-service/errors"
+	"github.com/thomas-bousquet/user-service/app_errors"
+	. "github.com/thomas-bousquet/user-service/app_errors"
 	. "github.com/thomas-bousquet/user-service/models"
 	uuid "github.com/thomas-bousquet/user-service/utils/id-generator"
 	"time"
@@ -48,7 +48,7 @@ func (jwt JWT) ParseToken(token string) (*jwtGo.Token, error) {
 	})
 
 	if err != nil {
-		return nil, errors.NewAuthorizationError(nil)
+		return nil, app_errors.NewAuthorizationError(nil)
 	}
 
 	return t, nil

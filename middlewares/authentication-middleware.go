@@ -4,7 +4,7 @@ import (
 	jwtGo "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/context"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/user-service/errors"
+	"github.com/thomas-bousquet/user-service/app_errors"
 	"github.com/thomas-bousquet/user-service/repositories"
 	. "github.com/thomas-bousquet/user-service/utils/error-handler"
 	"github.com/thomas-bousquet/user-service/utils/jwt"
@@ -37,7 +37,7 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			authorizationHeaderParts := strings.Fields(r.Header.Get("Authorization"))
 
 			if len(authorizationHeaderParts) < 2 || strings.ToLower(authorizationHeaderParts[0]) != "bearer" {
-				authorizationError := errors.NewAuthorizationError(nil)
+				authorizationError := app_errors.NewAuthorizationError(nil)
 				m.errorHandler.WriteJSONErrorResponse(w, authorizationError, m.logger)
 				return
 			}
@@ -47,7 +47,7 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			token, err := m.jwt.ParseToken(authorizationToken)
 
 			if err != nil {
-				m.errorHandler.WriteJSONErrorResponse(w, errors.NewAuthorizationError(nil), m.logger)
+				m.errorHandler.WriteJSONErrorResponse(w, app_errors.NewAuthorizationError(nil), m.logger)
 				return
 			}
 
@@ -57,13 +57,13 @@ func (m AuthenticationMiddleware) ExecuteWithRole(role string) func(next http.Ha
 			user, err := m.userRepository.FindUserWithRole(userId, role)
 
 			if err != nil {
-				unexpectedError := errors.NewUnexpectedError(nil, nil)
+				unexpectedError := app_errors.NewUnexpectedError(nil, nil)
 				m.errorHandler.WriteJSONErrorResponse(w, unexpectedError, m.logger)
 				return
 			}
 
 			if user == nil {
-				authorizationError := errors.NewAuthorizationError(nil)
+				authorizationError := app_errors.NewAuthorizationError(nil)
 				m.errorHandler.WriteJSONErrorResponse(w, authorizationError, m.logger)
 				return
 			}

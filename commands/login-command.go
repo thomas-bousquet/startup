@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	. "github.com/thomas-bousquet/user-service/api/adapters"
-	"github.com/thomas-bousquet/user-service/errors"
+	"github.com/thomas-bousquet/user-service/app_errors"
 	. "github.com/thomas-bousquet/user-service/models"
 	. "github.com/thomas-bousquet/user-service/repositories"
 	. "github.com/thomas-bousquet/user-service/utils/jwt"
@@ -27,18 +27,18 @@ func NewLoginCommand(userRepository UserRepository, validator Validator, jwt JWT
 	}
 }
 
-func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
+func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
 	email, password, ok := r.BasicAuth()
 
 	if !ok {
-		return errors.NewAuthorizationError(nil)
+		return app_errors.NewAuthorizationError(nil)
 	}
 
 	credentials := NewCredentials(email, password)
 	validationErrors := c.validator.ValidateStruct(credentials)
 
 	if len(validationErrors) > 0 {
-		return errors.NewValidationError(
+		return app_errors.NewValidationError(
 			"An error occurred when validating credentials",
 			validationErrors,
 		)
@@ -48,38 +48,38 @@ func (c LoginCommand) Execute(w http.ResponseWriter, r *http.Request, logger *lo
 
 	if err != nil {
 		logger.Errorf("%v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	if user == nil {
-		return errors.NewAuthorizationError(nil)
+		return app_errors.NewAuthorizationError(nil)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
 	if err != nil {
 		logger.Errorf("error when comparing passwords: %v", err)
-		return errors.NewAuthorizationError(nil)
+		return app_errors.NewAuthorizationError(nil)
 	}
 
 	token, err := c.jwt.CreateToken(*user)
 
 	if err != nil {
 		logger.Errorf("error creating JWT token: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	response, err := json.Marshal(NewLoginAdapter(*token))
 
 	if err != nil {
 		logger.Errorf("error marshalling response: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	_, err = w.Write(response)
 
 	if err != nil {
 		logger.Errorf("error writing response %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil
