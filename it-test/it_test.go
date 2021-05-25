@@ -41,14 +41,14 @@ func (s *ItTestSuite) TestUserFlow() {
 	assert.Equal(s.T(), http.StatusCreated, createUser.StatusCode, "Should create createUserResponseBody successfully")
 	createUserResponseBody := map[string]string{}
 	body, _ := ioutil.ReadAll(createUser.Body)
-	json.Unmarshal(body, &createUserResponseBody)
+	_ = json.Unmarshal(body, &createUserResponseBody)
 	userId := createUserResponseBody["id"]
-	createUser.Body.Close()
+	_ = createUser.Body.Close()
 
 	// Get User without auth
 	getUserWithoutAuthorization, _ := client.Get(s.baseUrl + "/users/" + userId)
 	assert.Equal(s.T(), http.StatusUnauthorized, getUserWithoutAuthorization.StatusCode)
-	getUserWithoutAuthorization.Body.Close()
+	_ = getUserWithoutAuthorization.Body.Close()
 
 	// Login
 	loginUserRequest, _ := http.NewRequest("POST", s.baseUrl+"/login", nil)
@@ -57,16 +57,24 @@ func (s *ItTestSuite) TestUserFlow() {
 	assert.Equal(s.T(), http.StatusOK, loginUserResponse.StatusCode)
 	body, _ = ioutil.ReadAll(loginUserResponse.Body)
 	loginResponseBody := map[string]string{}
-	json.Unmarshal(body, &loginResponseBody)
+	_ = json.Unmarshal(body, &loginResponseBody)
 	authToken := loginResponseBody["token"]
-	loginUserResponse.Body.Close()
+	_ = loginUserResponse.Body.Close()
 
-	// Get user with auth
+	// Get user
 	getUserResponseWithAuthorizationJWTRequest, _ := http.NewRequest("GET", s.baseUrl+"/users/"+userId, nil)
 	getUserResponseWithAuthorizationJWTRequest.Header.Set("Authorization", "Bearer "+authToken)
 	getUserWithAuthorizationResponse, _ := client.Do(getUserResponseWithAuthorizationJWTRequest)
 	assert.Equal(s.T(), http.StatusOK, getUserWithAuthorizationResponse.StatusCode)
-	getUserWithAuthorizationResponse.Body.Close()
+	_ = getUserWithAuthorizationResponse.Body.Close()
+
+	// User not found
+	randomId := faker.UUIDHyphenated()
+	userNotFoundRequest, _ := http.NewRequest("GET", s.baseUrl+"/users/"+randomId, nil)
+	userNotFoundRequest.Header.Set("Authorization", "Bearer "+authToken)
+	userNotFoundResponse, _ := client.Do(userNotFoundRequest)
+	assert.Equal(s.T(), http.StatusNotFound, userNotFoundResponse.StatusCode)
+	_ = userNotFoundResponse.Body.Close()
 }
 
 func TestItTestSuite(t *testing.T) {

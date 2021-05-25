@@ -6,7 +6,7 @@ require (
 	github.com/bxcodec/faker/v3 v3.5.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/universal-translator v0.17.0 // indirect
-	github.com/google/uuid v1.1.1
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.8.0
 	github.com/klauspost/compress v1.10.10 // indirect
