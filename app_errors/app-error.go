@@ -1,4 +1,4 @@
-package errors
+package app_errors
 
 type AppError struct {
 	Key              string      `json:"key"`
@@ -6,7 +6,7 @@ type AppError struct {
 	InternalMetadata interface{} `json:"metadata,omitempty"`
 }
 
-func NewError(key string, message *string, metadata map[string]interface{}) *AppError {
+func NewAppError(key string, message *string, metadata map[string]interface{}) error {
 	return &AppError{
 		Key:              key,
 		Message:          message,
@@ -14,6 +14,6 @@ func NewError(key string, message *string, metadata map[string]interface{}) *App
 	}
 }
 
-func (e AppError) Error() string {
+func (e *AppError) Error() string {
 	return e.Key
 }

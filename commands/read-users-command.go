@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"github.com/thomas-bousquet/user-service/api/adapters"
-	"github.com/thomas-bousquet/user-service/errors"
+	"github.com/thomas-bousquet/user-service/app_errors"
 	. "github.com/thomas-bousquet/user-service/repositories"
 	"net/http"
 )
@@ -19,12 +19,12 @@ func NewReadUsersCommand(userRepository UserRepository) ReadUsersCommand {
 	}
 }
 
-func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
+func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
 	users, err := c.userRepository.FindUsers()
 
 	if err != nil {
 		logger.Errorf("error finding users: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	var usersAdapter []adapters.UserAdapter
@@ -38,14 +38,14 @@ func (c ReadUsersCommand) Execute(w http.ResponseWriter, r *http.Request, logger
 
 	if err != nil {
 		logger.Errorf("error marshalling response: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	_, err = w.Write(response)
 
 	if err != nil {
 		logger.Errorf("error writing response: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil

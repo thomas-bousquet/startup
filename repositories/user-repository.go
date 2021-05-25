@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	. "github.com/thomas-bousquet/user-service/errors"
+	. "github.com/thomas-bousquet/user-service/app_errors"
 	. "github.com/thomas-bousquet/user-service/models"
 	uuid "github.com/thomas-bousquet/user-service/utils/id-generator"
 	"go.mongodb.org/mongo-driver/bson"

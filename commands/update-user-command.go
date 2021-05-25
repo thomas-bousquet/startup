@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/user-service/errors"
+	"github.com/thomas-bousquet/user-service/app_errors"
 	. "github.com/thomas-bousquet/user-service/models"
 	. "github.com/thomas-bousquet/user-service/repositories"
 	"github.com/thomas-bousquet/user-service/utils/validator"
@@ -23,7 +23,7 @@ func NewUpdateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
+func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -32,7 +32,7 @@ func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error unmarshalling request: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	user.Id = id
@@ -40,14 +40,14 @@ func (c UpdateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 	validationErrors := c.validator.ValidateStructExcept(user, "Password")
 
 	if len(validationErrors) > 0 {
-		return errors.NewValidationError("An error occurred when validating user fields", validationErrors)
+		return app_errors.NewValidationError("An error occurred when validating user fields", validationErrors)
 	}
 
 	err = c.userRepository.UpdateUser(id, user)
 
 	if err != nil {
 		logger.Errorf("error updating user: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil

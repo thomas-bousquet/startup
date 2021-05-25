@@ -3,7 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"github.com/thomas-bousquet/user-service/errors"
+	"github.com/thomas-bousquet/user-service/app_errors"
 	. "github.com/thomas-bousquet/user-service/models"
 	. "github.com/thomas-bousquet/user-service/repositories"
 	"github.com/thomas-bousquet/user-service/utils/validator"
@@ -23,26 +23,26 @@ func NewCreateUserCommand(userRepository UserRepository, validator validator.Val
 	}
 }
 
-func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) *errors.AppError {
+func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logger *logrus.Logger) error {
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
 		logger.Errorf("%v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	validationErrors := c.validator.ValidateStruct(user)
 
 	if len(validationErrors) > 0 {
-		return errors.NewValidationError("An error occurred when validating user fields", validationErrors)
+		return app_errors.NewValidationError("An error occurred when validating user fields", validationErrors)
 	}
 
 	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		logger.Errorf("error when encrypting new user's password with email %q: %v", user.Email, err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	user.Password = string(encryptedPassword)
@@ -50,14 +50,14 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error creating new user: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	response, err := json.Marshal(map[string]string{"id": *userId})
 
 	if err != nil {
 		logger.Errorf("error marshalling response: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	w.WriteHeader(http.StatusCreated)
@@ -65,7 +65,7 @@ func (c CreateUserCommand) Execute(w http.ResponseWriter, r *http.Request, logge
 
 	if err != nil {
 		logger.Errorf("error writing response: %v", err)
-		return errors.NewUnexpectedError(nil, nil)
+		return app_errors.NewUnexpectedError(nil, nil)
 	}
 
 	return nil
